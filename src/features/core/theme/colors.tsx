@@ -42,15 +42,15 @@ export const darkTheme = {
 
   info: '#6BA8FF',
   infoBackground: '#102A4C',
-  
+
   gradient: [
-    '#0F172A',
-    '#16213E',
-    '#1B2B4B',
+    '#050505', // Casi negro puro
+    '#111112', // Gris grafito muy oscuro
+    '#1A1A1C', // Gris azulado tenue
   ],
 
-  background: '#0F172A',
-  surface: '#1E293B',
+  background: '#050505', 
+  surface: '#121214',
   border: '#334155',
 
   textPrimary: '#F1F5F9',
