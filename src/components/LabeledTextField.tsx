@@ -1,7 +1,6 @@
 import { View, TextInput, TouchableOpacity, Text } from "react-native";
 import AdaptativeIcon from "./icons/AdaptativeIcon";
-import { useTheme } from "@/features/core/theme/useTheme";
-
+import { useTheme } from '@/core/theme/useTheme';
 
 interface LabeledTextFieldProps {
   label: string;

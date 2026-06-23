@@ -1,12 +1,14 @@
-import { createNativeHeaderOptions } from "@/features/config/UI/largeTitleScreen";
-import { AuthRoutes } from "@/features/core/navigatorTypes/navigatorTypes";
-import { RouteDetails } from "@/features/core/navigatorTypes/navigatorTypesTitle";
+
+import { createNativeHeaderOptions } from "@/config/UI/largeTitleScreen";
+import { AuthRoutes } from "@/core/navigatorTypes/navigatorTypes";
+import { RouteDetails } from "@/core/navigatorTypes/navigatorTypesTitle";
 import { Stack } from "expo-router";
 
 
 export default function AuthLayout() {
 
   const loginTitle = RouteDetails[AuthRoutes.Login].title;
+  
   return (
     <Stack>
       <Stack.Screen
@@ -15,7 +17,7 @@ export default function AuthLayout() {
       />
       <Stack.Screen
         name="register"
-        options={createNativeHeaderOptions("")}
+        options={createNativeHeaderOptions("Crear Cuenta")}
       />
     </Stack>
   );

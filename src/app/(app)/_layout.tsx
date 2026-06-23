@@ -1,9 +1,10 @@
 
 
+import { createNativeHeaderOptions } from '@/config/UI/largeTitleScreen';
+import { HomeRoutes } from '@/core/navigatorTypes/navigatorTypes';
+import { RouteDetails } from '@/core/navigatorTypes/navigatorTypesTitle';
 import { Stack } from 'expo-router'
-import { RouteDetails } from '@/features/core/navigatorTypes/navigatorTypesTitle'
-import { HomeRoutes } from '@/features/core/navigatorTypes/navigatorTypes';
-import { createNativeHeaderOptions } from '@/features/config/UI/largeTitleScreen';
+
 
 export default function HomeLayout() {
     const indexTitle = RouteDetails[HomeRoutes.Home].title;

@@ -1,5 +1,5 @@
+import { useTheme } from '@/core/theme/useTheme';
 import { View, Text } from 'react-native'
-import { useTheme } from '@/features/core/theme/useTheme';
 
 interface DividerProps {
     title?: String

@@ -1,4 +1,4 @@
-import { useTheme } from '@/features/core/theme/useTheme';
+import { useTheme } from '@/core/theme/useTheme';
 import { FlexAlignType, StyleProp, Text, TextStyle, TouchableOpacity } from 'react-native';
 
 interface TouchableTextProps {

@@ -1,6 +1,5 @@
 import {  Text, TouchableOpacity } from 'react-native'
-import { useTheme } from '@/features/core/theme/useTheme';
-import { LinearGradient } from 'expo-linear-gradient';
+import { useTheme } from '@/core/theme/useTheme';import { LinearGradient } from 'expo-linear-gradient';
 
 interface PrimaryButtonProps{ 
     title: String;

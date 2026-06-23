@@ -9,5 +9,6 @@ export function createNativeHeaderOptions(
     title,
     headerLargeTitleEnabled: Platform.OS === 'ios',
     headerShadowVisible: false,
+    headerBackButtonDisplayMode: 'minimal',
   };
 }

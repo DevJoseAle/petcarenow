@@ -1,10 +1,2 @@
-import { View, Text } from 'react-native'
-import React from 'react'
-
-export default function RegisterScreen() {
-  return (
-    <View>
-      <Text>RegisterScreen</Text>
-    </View>
-  )
-}
+import SignUpScreen from "@/features/auth/screens/SignUpScreen";
+export default SignUpScreen;
