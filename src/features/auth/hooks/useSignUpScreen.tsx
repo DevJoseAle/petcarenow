@@ -1,33 +1,31 @@
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
-import { loginWithEmail } from '../services/auth.service';
-import { useAuthStore } from '../store/auth.store';
+import { signUpWithEmail } from '../services/auth.service';
 import type {
-  LoginCredentials,
-  LoginValidationErrors,
+  SignUpCredentials,
+  SignUpValidationErrors,
 } from '../types/auth.types';
 import {
   normalizeEmail,
-  validateLoginCredentials,
+  validateSignUpCredentials,
 } from '../utils/auth.validators';
 
-const initialCredentials: LoginCredentials = {
+const initialCredentials: SignUpCredentials = {
   email: '',
   password: '',
 };
 
-export const useLoginScreen = () => {
+export const useSignUpScreen = () => {
   const router = useRouter();
-  const setSession = useAuthStore(
-    (state) => state.setSession
-  );
   const [credentials, setCredentials] =
-    useState<LoginCredentials>(
+    useState<SignUpCredentials>(
       initialCredentials
     );
   const [errors, setErrors] =
-    useState<LoginValidationErrors>({});
+    useState<SignUpValidationErrors>({});
   const [generalError, setGeneralError] =
+    useState('');
+  const [successMessage, setSuccessMessage] =
     useState('');
   const [isSubmitting, setIsSubmitting] =
     useState(false);
@@ -35,7 +33,7 @@ export const useLoginScreen = () => {
     useState(false);
 
   const setFieldValue = (
-    field: keyof LoginCredentials,
+    field: keyof SignUpCredentials,
     value: string
   ) => {
     setCredentials((current) => ({
@@ -51,11 +49,12 @@ export const useLoginScreen = () => {
       [field]: undefined,
     }));
     setGeneralError('');
+    setSuccessMessage('');
   };
 
   const validateForm = () => {
     const nextErrors =
-      validateLoginCredentials(credentials);
+      validateSignUpCredentials(credentials);
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
   };
@@ -83,8 +82,9 @@ export const useLoginScreen = () => {
 
     setIsSubmitting(true);
     setGeneralError('');
+    setSuccessMessage('');
 
-    const result = await loginWithEmail(
+    const result = await signUpWithEmail(
       credentials
     );
 
@@ -95,16 +95,11 @@ export const useLoginScreen = () => {
       return;
     }
 
-    setSession(result.data.session);
-    router.replace('/(app)');
+    setSuccessMessage(result.message);
   };
 
-  const goToRegister = () => {
-    router.push('/(auth)/register');
-  };
-
-  const goToForgotPassword = () => {
-    router.push('/(auth)/forgot-password');
+  const goToLogin = () => {
+    router.replace('/(auth)/login');
   };
 
   const togglePasswordVisibility = () => {
@@ -117,6 +112,7 @@ export const useLoginScreen = () => {
     emailError: errors.email,
     passwordError: errors.password,
     generalError,
+    successMessage,
     isSubmitting,
     isPasswordVisible,
     setEmail: (value: string) =>
@@ -126,8 +122,7 @@ export const useLoginScreen = () => {
     handleEmailBlur,
     handlePasswordBlur,
     handleSubmit,
-    goToRegister,
-    goToForgotPassword,
+    goToLogin,
     togglePasswordVisibility,
   };
 };
