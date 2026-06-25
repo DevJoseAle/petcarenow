@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useRouter } from 'expo-router';
 import { loginWithEmail } from '../services/auth.service';
 import { useAuthStore } from '../store/auth.store';
+import { hasRegisteredPets } from '@/features/pets/services/pet.service';
+import { usePetOnboardingGateStore } from '@/features/pets/store/petOnboardingGate.store';
 import type {
   LoginCredentials,
   LoginValidationErrors,
@@ -21,6 +23,14 @@ export const useLoginScreen = () => {
   const setSession = useAuthStore(
     (state) => state.setSession
   );
+  const markHasPets =
+    usePetOnboardingGateStore(
+      (state) => state.markHasPets
+    );
+  const resetPetGate =
+    usePetOnboardingGateStore(
+      (state) => state.reset
+    );
   const [credentials, setCredentials] =
     useState<LoginCredentials>(
       initialCredentials
@@ -96,7 +106,23 @@ export const useLoginScreen = () => {
     }
 
     setSession(result.data.session);
-    router.replace('/(app)');
+    try {
+      const hasPets = await hasRegisteredPets(
+        result.data.user.id
+      );
+
+      if (hasPets) {
+        markHasPets();
+        router.replace('/(app)');
+        return;
+      }
+
+      resetPetGate();
+      router.replace('/pet-onboarding');
+    } catch {
+      resetPetGate();
+      router.replace('/pet-onboarding');
+    }
   };
 
   const goToRegister = () => {

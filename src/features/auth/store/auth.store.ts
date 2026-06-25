@@ -1,9 +1,10 @@
-import { create } from 'zustand';
+import { supabase } from '@/config/supabase';
 import type {
   Session,
   User,
 } from '@supabase/supabase-js';
-import { supabase } from '@/config/supabase';
+import { create } from 'zustand';
+import { logger } from '@/core/utils/debug';
 
 interface AuthState {
   session: Session | null;
@@ -25,16 +26,27 @@ export const useAuthStore = create<AuthState>(
     user: null,
     isAuthenticated: false,
     isHydrating: true,
-    setSession: (session) =>
+    setSession: (session) => {
+      logger.debug('AuthStore setSession called', {
+        hasSession: Boolean(session),
+        userId: session?.user?.id,
+      });
       set({
         session,
         user: getSessionUser(session),
         isAuthenticated: Boolean(session),
         isHydrating: false,
-      }),
+      });
+    },
     hydrateSession: async () => {
+      logger.debug('AuthStore hydrateSession started');
       const { data } =
         await supabase.auth.getSession();
+
+      logger.debug('AuthStore hydrateSession result', {
+        hasSession: Boolean(data.session),
+        userId: data.session?.user?.id,
+      });
 
       set({
         session: data.session,
@@ -44,6 +56,7 @@ export const useAuthStore = create<AuthState>(
       });
     },
     clearSession: async () => {
+      logger.debug('AuthStore clearSession called');
       await supabase.auth.signOut();
       set({
         session: null,

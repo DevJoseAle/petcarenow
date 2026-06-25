@@ -6,5 +6,5 @@ export enum AuthRoutes {
 export enum HomeRoutes {
   Home = 'Home',
   Detail = 'Detail',
+  PetOnboarding = 'PetOnboarding',
 }
-

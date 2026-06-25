@@ -1,42 +1,31 @@
 import { useEffect } from 'react';
 import { Stack } from 'expo-router';
-import { supabase } from '@/config/supabase';
+import { ActivityIndicator, View } from 'react-native';
 import { useAuthStore } from '@/features/auth/store/auth.store';
-import { useOnboardingStore } from '@/features/auth/store/onboarding.store';
+import { logger } from '@/core/utils/debug';
 
 export default function RootLayout() {
-  const hydrateSession = useAuthStore(
-    (state) => state.hydrateSession
-  );
-  const setSession = useAuthStore(
-    (state) => state.setSession
-  );
-  const hydrateOnboarding =
-    useOnboardingStore(
-      (state) => state.hydrateOnboarding
-    );
+  const isHydrating = useAuthStore((state) => state.isHydrating);
+
+  logger.debug('RootLayout render', { isHydrating });
 
   useEffect(() => {
-    hydrateSession();
-    hydrateOnboarding();
+    logger.debug('RootLayout hydrateSession called');
+    useAuthStore.getState().hydrateSession();
+  }, []);
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setSession(session);
-      }
+  logger.debug('RootLayout after useEffect', { isHydrating });
+
+  if (isHydrating) {
+    logger.debug('RootLayout showing loading');
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
     );
+  }
 
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [
-    hydrateOnboarding,
-    hydrateSession,
-    setSession,
-  ]);
-
+  logger.debug('RootLayout rendering Stack');
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="index" />

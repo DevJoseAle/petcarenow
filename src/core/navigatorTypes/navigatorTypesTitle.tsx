@@ -14,4 +14,7 @@ export const RouteDetails: Record<AppRoutes, RouteConfig> = {
   [AuthRoutes.Register]: { title: 'Crear cuenta' },
   [HomeRoutes.Home]: { title: 'Inicio' },
   [HomeRoutes.Detail]: { title: 'Detalle del Producto' },
+  [HomeRoutes.PetOnboarding]: {
+    title: 'Tu mascota',
+  },
 };
