@@ -1,81 +1,86 @@
-// shared/components/Screen.tsx
-
-import { PropsWithChildren } from 'react';
 import React from 'react';
-import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useTheme } from '@/core/theme/useTheme'; import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useHeaderHeight } from 'expo-router/build/react-navigation';
+
+import { useTheme } from '@/core/theme/useTheme';
 
 interface Props {
   children: React.ReactNode;
-  scroll?: boolean
-  horizontalPadding?: number
+  scroll?: boolean;
+  horizontalPadding?: number;
 }
 
-export function Screen({ children, scroll = false, horizontalPadding }: Props) {
+const BASE_TOP_SPACING = 16;
+
+export function Screen({
+  children,
+  scroll = false,
+  horizontalPadding = 16,
+}: Props) {
   const headerHeight = useHeaderHeight();
-  const theme = useTheme();
   const insets = useSafeAreaInsets();
-  const Container = scroll == true
-    ? ScrollviewWithProps
-    : ViewWithProps
+  const theme = useTheme();
+  const hasHeader = headerHeight > 0;
+  const topPadding = hasHeader
+    ? BASE_TOP_SPACING
+    : insets.top + BASE_TOP_SPACING;
+  const contentPadding = {
+    paddingTop: topPadding,
+    paddingBottom: insets.bottom,
+    paddingLeft: Math.max(
+      insets.left,
+      horizontalPadding
+    ),
+    paddingRight: Math.max(
+      insets.right,
+      horizontalPadding
+    ),
+  };
 
   return (
     <LinearGradient
       colors={theme.gradient as [string, string, ...string[]]}
-      style={{ flex: 1 }}>
-      <Container insets={insets} headerHeight={headerHeight} horizontalPadding={horizontalPadding} >
-        {children}
-      </Container>
+      style={styles.root}
+    >
+      {scroll ? (
+        <ScrollView
+          style={styles.root}
+          contentContainerStyle={[
+            styles.scrollContent,
+            contentPadding,
+          ]}
+          contentInsetAdjustmentBehavior="never"
+          automaticallyAdjustContentInsets={false}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          {children}
+        </ScrollView>
+      ) : (
+        <View
+          style={[
+            styles.root,
+            contentPadding,
+          ]}
+        >
+          {children}
+        </View>
+      )}
     </LinearGradient>
   );
 }
 
-
-interface ViewProps {
-  children: React.ReactNode;
-  insets: EdgeInsets;
-  headerHeight: number;
-  horizontalPadding?: number
-
-}
-const ViewWithProps = ({ children, insets, headerHeight, horizontalPadding = 16 }: ViewProps) => {
-  return (
-    <View
-      style={[
-        styles.content,
-        {
-          paddingTop: insets.top + (headerHeight ?? 0),
-          paddingBottom: insets.bottom,
-          paddingLeft: Math.max(insets.left, horizontalPadding),
-          paddingRight: Math.max(insets.right, horizontalPadding)
-        },
-      ]}>
-      {children}
-    </View>
-  )
-};
-const ScrollviewWithProps = ({ children, insets, headerHeight, horizontalPadding = 16 }: ViewProps) => {
-  const isIos = Platform.OS == 'ios'
-  const topInset = isIos && headerHeight > 90 ? 90 : 10
-  return (
-    <ScrollView
-      style={[
-        styles.content,
-        {
-          paddingTop: insets.top + topInset,
-          paddingBottom: insets.bottom,
-          paddingLeft: Math.max(insets.left, horizontalPadding),
-          paddingRight: Math.max(insets.right, horizontalPadding),
-        },
-      ]}>
-      {children}
-    </ScrollView>
-  );
-}
 const styles = StyleSheet.create({
-  content: {
+  root: {
     flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
   },
 });

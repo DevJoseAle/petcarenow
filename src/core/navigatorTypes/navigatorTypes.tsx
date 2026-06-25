@@ -5,6 +5,14 @@ export enum AuthRoutes {
 
 export enum HomeRoutes {
   Home = 'Home',
-  Detail = 'Detail',
   PetOnboarding = 'PetOnboarding',
+  Pets = 'Pets',
+  Calendar = 'Calendar',
+  More = 'More',
+  CareProfile = 'CareProfile',
+  RecordEntry = 'RecordEntry',
+  EventEntry = 'EventEntry',
+  Veterinaries = 'Veterinaries',
+  VeterinaryProfile = 'VeterinaryProfile',
+  PetDetail = 'PetDetail',
 }

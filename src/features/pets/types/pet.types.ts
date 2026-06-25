@@ -47,6 +47,19 @@ export interface CreatePetInput {
   is_active: boolean;
 }
 
+export interface UpdatePetInput {
+  name?: string;
+  pet_type?: PetType;
+  gender?: PetGender | null;
+  breed?: string | null;
+  birth_date?: string | null;
+  age_years?: number | null;
+  weight_kg?: number | null;
+  photo_url?: string | null;
+  allergies?: string[];
+  medical_conditions?: string[];
+}
+
 export interface PetServiceError {
   code: 'NETWORK_ERROR' | 'UNEXPECTED_ERROR';
   message: string;

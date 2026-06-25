@@ -4,6 +4,7 @@ import type {
   CreatePetResult,
   Pet,
   PetServiceError,
+  UpdatePetInput,
 } from '../types/pet.types';
 
 interface CreatePetOptions {
@@ -77,6 +78,24 @@ export const hasRegisteredPets = async (
   }
 
   return (data?.length ?? 0) > 0;
+};
+
+export const getUserPets = async (
+  ownerId: string
+) => {
+  const { data, error } = await supabase
+    .from('pets')
+    .select('*')
+    .eq('owner_id', ownerId)
+    .order('created_at', {
+      ascending: true,
+    });
+
+  if (error) {
+    throw mapPetError(error);
+  }
+
+  return (data ?? []) as Pet[];
 };
 
 export const createPet = async (
@@ -181,6 +200,62 @@ export const createPet = async (
   } catch (error) {
     return {
       success: false,
+      error: mapPetError(error),
+    };
+  }
+};
+
+export const updatePet = async (
+  petId: string,
+  input: UpdatePetInput
+) => {
+  try {
+    const { data, error } = await supabase
+      .from('pets')
+      .update(input)
+      .eq('id', petId)
+      .select('*')
+      .single();
+
+    if (error || !data) {
+      return {
+        success: false as const,
+        error: mapPetError(error),
+      };
+    }
+
+    return {
+      success: true as const,
+      data: data as Pet,
+    };
+  } catch (error) {
+    return {
+      success: false as const,
+      error: mapPetError(error),
+    };
+  }
+};
+
+export const deletePet = async (petId: string) => {
+  try {
+    const { error } = await supabase
+      .from('pets')
+      .delete()
+      .eq('id', petId);
+
+    if (error) {
+      return {
+        success: false as const,
+        error: mapPetError(error),
+      };
+    }
+
+    return {
+      success: true as const,
+    };
+  } catch (error) {
+    return {
+      success: false as const,
       error: mapPetError(error),
     };
   }

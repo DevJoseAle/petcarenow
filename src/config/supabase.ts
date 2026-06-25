@@ -19,8 +19,62 @@ if (!supabaseUrl || !supabaseAnonKey) {
 }
 
 const isWeb = Platform.OS === 'web';
+const isServerSide =
+  typeof window === 'undefined';
 
-const storage = isWeb
+const createMemoryStorage = () => {
+  const store = new Map<string, string>();
+
+  return {
+    getItem: async (key: string) =>
+      store.get(key) ?? null,
+    setItem: async (
+      key: string,
+      value: string
+    ) => {
+      store.set(key, value);
+    },
+    removeItem: async (key: string) => {
+      store.delete(key);
+    },
+  };
+};
+
+class NoopWebSocket {
+  static readonly CONNECTING = 0;
+  static readonly OPEN = 1;
+  static readonly CLOSING = 2;
+  static readonly CLOSED = 3;
+
+  readonly CONNECTING = 0;
+  readonly OPEN = 1;
+  readonly CLOSING = 2;
+  readonly CLOSED = 3;
+  readonly readyState = 3;
+  readonly url: string;
+  readonly protocol = '';
+
+  onopen = null;
+  onmessage = null;
+  onclose = null;
+  onerror = null;
+
+  constructor(address: string | URL) {
+    this.url = String(address);
+  }
+
+  close() {}
+
+  send() {}
+
+  addEventListener() {}
+
+  removeEventListener() {}
+}
+
+const storage = isServerSide
+  ? createMemoryStorage()
+  : isWeb
   ? {
       getItem: (key: string) =>
         AsyncStorage.getItem(key),
@@ -49,15 +103,21 @@ export const supabase = createClient(
   {
     auth: {
       storage,
-      autoRefreshToken: true,
-      persistSession: true,
+      autoRefreshToken: !isServerSide,
+      persistSession: !isServerSide,
       detectSessionInUrl: false,
       lock: processLock,
+      skipAutoInitialize: isServerSide,
     },
+    realtime: isServerSide
+      ? {
+          transport: NoopWebSocket,
+        }
+      : undefined,
   }
 );
 
-if (!isWeb) {
+if (!isWeb && !isServerSide) {
   AppState.addEventListener(
     'change',
     (state) => {
