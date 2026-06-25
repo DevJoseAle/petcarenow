@@ -55,7 +55,7 @@ export default function HomeLayout() {
     if (needsOnboarding && !hasNavigatedRef.current) {
       hasNavigatedRef.current = true;
       logger.info('HomeLayout navigating to pet-onboarding');
-      router.push('/pet-onboarding');
+      router.replace('/pet-onboarding');
     } else if (!needsOnboarding && hasNavigatedRef.current) {
       hasNavigatedRef.current = false;
     }
