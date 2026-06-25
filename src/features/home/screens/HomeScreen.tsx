@@ -8,6 +8,7 @@ import Ionicons from '@react-native-vector-icons/ionicons';
 import { Image } from 'expo-image';
 
 import { Screen } from '@/components/Screen';
+import PrimaryButton from '@/components/PrimaryButton';
 import { useTheme } from '@/core/theme/useTheme';
 
 import HomeCareItem from '../components/HomeCareItem';
@@ -32,6 +33,7 @@ export default function HomeScreen() {
     activePetWeightLabel,
     profileProgress,
     quickActions,
+    pets,
     careEvents,
     isPetsHydrating,
     petsError,
@@ -47,7 +49,53 @@ export default function HomeScreen() {
     retryCareEvents,
     retryEmergency,
     selectNextPet,
+    navigateToAddPet,
   } = useHomeScreen();
+
+  const hasNoActivePets =
+    !isPetsHydrating &&
+    !petsError &&
+    pets.length === 0;
+
+  if (hasNoActivePets) {
+    return (
+      <Screen>
+        <View style={styles.emptyState}>
+          <View style={styles.emptyIcon}>
+            <Ionicons
+              name="paw-outline"
+              size={40}
+              color="#6D4DFF"
+            />
+          </View>
+          <Text
+            style={[
+              styles.emptyTitle,
+              { color: theme.textPrimary },
+            ]}
+          >
+            Aún no tienes mascotas activas
+          </Text>
+          <Text
+            style={[
+              styles.emptyMessage,
+              { color: theme.textSecondary },
+            ]}
+          >
+            Agrega una mascota para volver a ver tu
+            resumen y comenzar a registrar sus
+            cuidados.
+          </Text>
+          <View style={styles.emptyButtonWrap}>
+            <PrimaryButton
+              title="Agregar mascota"
+              action={navigateToAddPet}
+            />
+          </View>
+        </View>
+      </Screen>
+    );
+  }
 
   return (
     <Screen scroll>
@@ -319,5 +367,37 @@ const styles = StyleSheet.create({
   },
   careList: {
     gap: 10,
+  },
+  emptyState: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 24,
+  },
+  emptyIcon: {
+    width: 88,
+    height: 88,
+    borderRadius: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#F2ECFF',
+    marginBottom: 20,
+  },
+  emptyTitle: {
+    fontSize: 26,
+    fontWeight: '800',
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  emptyMessage: {
+    fontSize: 16,
+    lineHeight: 24,
+    textAlign: 'center',
+    maxWidth: 320,
+  },
+  emptyButtonWrap: {
+    width: '100%',
+    maxWidth: 320,
+    marginTop: 12,
   },
 });

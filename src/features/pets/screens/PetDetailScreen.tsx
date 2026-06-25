@@ -1,4 +1,5 @@
 import {
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -6,6 +7,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import DateTimePicker from '@expo/ui/community/datetime-picker';
 import { Screen } from '@/components/Screen';
 import PrimaryButton from '@/components/PrimaryButton';
 import { useTheme } from '@/core/theme/useTheme';
@@ -17,6 +19,7 @@ import {
 } from '../types/pet.types';
 import { usePetDetailScreen } from '../hooks/usePetDetailScreen';
 import PetChoiceChip from '../components/PetChoiceChip';
+import PetPhotoPickerCard from '../components/PetPhotoPickerCard';
 
 export default function PetDetailScreen() {
   const theme = useTheme();
@@ -32,16 +35,23 @@ export default function PetDetailScreen() {
     breed,
     setBreed,
     birthDate,
-    setBirthDate,
     weightKg,
     setWeightKg,
+    photoURL,
     allergies,
     setAllergies,
     medicalConditions,
     setMedicalConditions,
     breedOptions,
+    isBirthDatePickerVisible,
+    formattedBirthDateLabel,
     generalError,
     isSubmitting,
+    openBirthDatePicker,
+    closeBirthDatePicker,
+    handleBirthDateChange,
+    openPhotoOptions,
+    handleCancel,
     handleSave,
     handleDelete,
   } = usePetDetailScreen();
@@ -62,6 +72,11 @@ export default function PetDetailScreen() {
             ? 'Agregar mascota'
             : `Editar a ${pet?.name ?? 'tu mascota'}`}
         </Text>
+
+        <PetPhotoPickerCard
+          photoURL={photoURL}
+          onPress={openPhotoOptions}
+        />
 
         <TextInput
           value={name}
@@ -152,19 +167,51 @@ export default function PetDetailScreen() {
           />
         )}
 
-        <TextInput
-          value={birthDate}
-          onChangeText={setBirthDate}
-          placeholder="Fecha de nacimiento (YYYY-MM-DD)"
-          placeholderTextColor={theme.textSecondary}
+        <Pressable
+          onPress={openBirthDatePicker}
           style={[
-            styles.input,
+            styles.dateButton,
             {
               borderColor: theme.border,
-              color: theme.textPrimary,
             },
           ]}
-        />
+        >
+          <Text
+            style={[
+              styles.dateButtonText,
+              { color: theme.textPrimary },
+            ]}
+          >
+            {formattedBirthDateLabel}
+          </Text>
+        </Pressable>
+        {isBirthDatePickerVisible ? (
+          <View style={styles.datePickerWrapper}>
+            <DateTimePicker
+              value={
+                birthDate
+                  ? new Date(birthDate)
+                  : new Date()
+              }
+              mode="date"
+              maximumDate={new Date()}
+              display={
+                Platform.OS === 'ios'
+                  ? 'inline'
+                  : 'default'
+              }
+              presentation={
+                Platform.OS === 'android'
+                  ? 'dialog'
+                  : 'inline'
+              }
+              onValueChange={(_event, date) =>
+                handleBirthDateChange(date)
+              }
+              onDismiss={closeBirthDatePicker}
+            />
+          </View>
+        ) : null}
         <TextInput
           value={weightKg}
           onChangeText={setWeightKg}
@@ -214,6 +261,20 @@ export default function PetDetailScreen() {
           </Text>
         ) : null}
 
+        <Pressable
+          onPress={handleCancel}
+          style={styles.cancelButton}
+        >
+          <Text
+            style={[
+              styles.cancelText,
+              { color: theme.textSecondary },
+            ]}
+          >
+            {isCreateMode ? 'Cancelar' : 'Volver'}
+          </Text>
+        </Pressable>
+
         <PrimaryButton
           title={
             isSubmitting
@@ -261,6 +322,20 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     fontSize: 16,
   },
+  dateButton: {
+    borderWidth: 1,
+    borderRadius: 18,
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+  },
+  dateButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  datePickerWrapper: {
+    borderRadius: 18,
+    overflow: 'hidden',
+  },
   textArea: {
     minHeight: 110,
     textAlignVertical: 'top',
@@ -272,6 +347,14 @@ const styles = StyleSheet.create({
   errorText: {
     color: '#DC2626',
     fontSize: 14,
+  },
+  cancelButton: {
+    alignSelf: 'center',
+    marginTop: 4,
+  },
+  cancelText: {
+    fontSize: 16,
+    fontWeight: '600',
   },
   deleteButton: {
     marginTop: 8,

@@ -6,7 +6,7 @@
 - [x] Onboarding inicial de usuario
 - [x] Onboarding de primera mascota
 - [x] Home base navegable
-- [ ] Tabs reales de la app
+- [x] Tabs reales de la app
 - [ ] CRUD completo de mascotas
 - [ ] Perfil de cuidado
 - [ ] Registro rápido
@@ -19,35 +19,35 @@
 
 ### Navegación
 
-- [ ] Reemplazar shell actual por tabs: Inicio, Mascotas, +, Calendario, Más
-- [ ] Dejar `pet-onboarding` como ruta oculta dentro del grupo autenticado
-- [ ] Agregar rutas ocultas para perfil de cuidado, detalle de mascota, registro rápido, creación de evento, veterinarias y perfil de veterinaria
+- [x] Reemplazar shell actual por tabs: Inicio, Mascotas, +, Calendario, Más
+- [x] Dejar `pet-onboarding` como ruta oculta dentro del grupo autenticado
+- [x] Agregar rutas ocultas para perfil de cuidado, detalle de mascota, registro rápido, creación de evento, veterinarias y perfil de veterinaria
 
 ### Datos
 
 - [ ] Mantener `pets` como entidad real de mascota
-- [ ] Implementar contratos de `pet_records`
-- [ ] Implementar contratos de `care_events`
-- [ ] Implementar contratos de `veterinaries`
-- [ ] Implementar contratos de `saved_veterinaries`
-- [ ] Conectar servicios mock-first mientras no existan tablas nuevas en Supabase
+- [x] Implementar contratos de `pet_records`
+- [x] Implementar contratos de `care_events`
+- [x] Implementar contratos de `veterinaries`
+- [x] Implementar contratos de `saved_veterinaries`
+- [x] Conectar servicios mock-first mientras no existan tablas nuevas en Supabase
 
 ### Home
 
-- [ ] Construir home visual alineado al diseño externo
-- [ ] Mostrar mascota activa real
-- [ ] Mostrar CTA de cambio de mascota si hay más de una
-- [ ] Implementar card de emergencia con menú
-- [ ] Implementar registro rápido con accesos directos
-- [ ] Implementar próximos cuidados con eventos
-- [ ] Implementar card de perfil de cuidado
-- [ ] Dejar vacunas listas detrás de flag
+- [x] Construir home visual alineado al diseño externo
+- [x] Mostrar mascota activa real
+- [x] Mostrar CTA de cambio de mascota si hay más de una
+- [x] Implementar card de emergencia con menú
+- [x] Implementar registro rápido con accesos directos
+- [x] Implementar próximos cuidados con eventos
+- [x] Implementar card de perfil de cuidado
+- [x] Dejar vacunas listas detrás de flag
 
 ### Mascotas
 
-- [ ] Crear store global de mascota activa
-- [ ] Listar mascotas del usuario
-- [ ] Seleccionar mascota activa
+- [x] Crear store global de mascota activa
+- [x] Listar mascotas del usuario
+- [x] Seleccionar mascota activa
 - [ ] Permitir agregar mascota reutilizando el onboarding actual
 - [ ] Permitir editar mascota
 - [ ] Permitir eliminar mascota con confirmación
@@ -74,11 +74,16 @@
 
 ### Más
 
-- [ ] Crear listado de opciones
+- [x] Crear listado de opciones
 - [ ] Activar perfil de usuario
 - [ ] Activar veterinarias guardadas
-- [ ] Mantener placeholders para settings, premium, ayuda y legal
-- [ ] Mantener logout dentro de esta sección
+- [x] Mantener placeholders para settings, premium, ayuda y legal
+- [x] Mantener logout dentro de esta sección
+
+## Siguiente HU
+
+- HU-Mascotas
+- Objetivo: cerrar el CRUD completo de mascotas con alta adicional, edición, eliminación con confirmación y mejor flujo de mascota activa.
 
 ## Notas
 

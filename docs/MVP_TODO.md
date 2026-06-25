@@ -48,19 +48,19 @@
 
 ## UI
 
-* [ ] Pets list screen
-* [ ] Add pet screen
-* [ ] Edit pet screen
+* [x] Pets list screen
+* [x] Add pet screen base
+* [x] Edit pet screen base
 * [ ] Pet profile screen
-* [ ] Active pet selector
+* [x] Active pet selector
 
 ## Features
 
-* [ ] Create pet
-* [ ] Edit pet
+* [x] Create pet base
+* [x] Edit pet base
 * [ ] Delete pet
 * [ ] Upload pet photo
-* [ ] Change active pet
+* [x] Change active pet
 
 ## Tests
 
@@ -74,28 +74,39 @@
 
 ## Specification
 
-* [ ] Create home specification
+* [x] Create home specification
 
 ## UI
 
-* [ ] Header section
-* [ ] Active pet card
-* [ ] Emergency card
-* [ ] Today for pet card
-* [ ] Quick log section
-* [ ] Upcoming care section
-* [ ] Care profile section
+* [x] Header section
+* [x] Active pet card
+* [x] Emergency card
+* [x] Today for pet card behind flag
+* [x] Quick log section
+* [x] Upcoming care section
+* [x] Care profile section
 
 ## Navigation
 
-* [ ] Active pet card → Pet profile
-* [ ] Change pet action
-* [ ] Emergency action
-* [ ] Calendar action
+* [x] Active pet card → Pet profile
+* [x] Change pet action
+* [x] Emergency action
+* [x] Calendar action
 
 ## Tests
 
 * [ ] Home UI tests
+
+---
+
+# Next HU
+
+## HU-Mascotas
+
+* [ ] Completar alta adicional de mascota
+* [ ] Completar edición de mascota existente
+* [ ] Agregar eliminación con confirmación
+* [ ] Definir pantalla de perfil de mascota
 
 ---
 

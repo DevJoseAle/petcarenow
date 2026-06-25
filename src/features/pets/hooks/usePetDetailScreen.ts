@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Alert } from 'react-native';
+import { Alert, Platform } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useAuthStore } from '@/features/auth/store/auth.store';
 import {
@@ -7,6 +7,10 @@ import {
   deletePet,
   updatePet,
 } from '../services/pet.service';
+import {
+  pickPetPhotoFromLibrary,
+  takePetPhoto,
+} from '../services/pet-media.service';
 import { usePetStore } from '../store/pet.store';
 import {
   PetGender,
@@ -14,6 +18,7 @@ import {
   catBreedOptions,
   dogBreedOptions,
 } from '../types/pet.types';
+import { formatBirthDateLabel } from '../utils/pet.validators';
 
 export const usePetDetailScreen = () => {
   const params = useLocalSearchParams<{
@@ -46,6 +51,11 @@ export const usePetDetailScreen = () => {
   const [breed, setBreed] = useState('');
   const [birthDate, setBirthDate] = useState('');
   const [weightKg, setWeightKg] = useState('');
+  const [photoURL, setPhotoURL] = useState('');
+  const [photoBase64, setPhotoBase64] =
+    useState<string | null>(null);
+  const [photoMimeType, setPhotoMimeType] =
+    useState<string | null>(null);
   const [allergies, setAllergies] = useState('');
   const [medicalConditions, setMedicalConditions] =
     useState('');
@@ -53,6 +63,10 @@ export const usePetDetailScreen = () => {
     useState('');
   const [isSubmitting, setIsSubmitting] =
     useState(false);
+  const [
+    isBirthDatePickerVisible,
+    setIsBirthDatePickerVisible,
+  ] = useState(false);
 
   useEffect(() => {
     if (!pet || isCreateMode) {
@@ -69,6 +83,9 @@ export const usePetDetailScreen = () => {
         ? String(pet.weight_kg)
         : ''
     );
+    setPhotoURL(pet.photo_url ?? '');
+    setPhotoBase64(null);
+    setPhotoMimeType(null);
     setAllergies(pet.allergies.join(', '));
     setMedicalConditions(
       pet.medical_conditions.join(', ')
@@ -86,6 +103,110 @@ export const usePetDetailScreen = () => {
 
     return [];
   }, [petType]);
+
+  const formattedBirthDateLabel =
+    formatBirthDateLabel(birthDate);
+
+  const openBirthDatePicker = () => {
+    setIsBirthDatePickerVisible(true);
+  };
+
+  const closeBirthDatePicker = () => {
+    setIsBirthDatePickerVisible(false);
+  };
+
+  const handleBirthDateChange = (
+    date?: Date
+  ) => {
+    if (!date) {
+      closeBirthDatePicker();
+      return;
+    }
+
+    setBirthDate(
+      date.toISOString().split('T')[0]
+    );
+    setGeneralError('');
+
+    if (Platform.OS === 'android') {
+      closeBirthDatePicker();
+    }
+  };
+
+  const updatePhotoState = ({
+    uri,
+    base64,
+    mimeType,
+  }: {
+    uri: string;
+    base64: string | null;
+    mimeType: string | null;
+  }) => {
+    setPhotoURL(uri);
+    setPhotoBase64(base64);
+    setPhotoMimeType(mimeType);
+    setGeneralError('');
+  };
+
+  const handlePhotoResult = async (
+    action: () => Promise<{
+      success: boolean;
+      uri: string | null;
+      base64: string | null;
+      mimeType: string | null;
+      error?: string;
+    }>
+  ) => {
+    const result = await action();
+
+    if (!result.success) {
+      if (result.error) {
+        setGeneralError(result.error);
+      }
+
+      return;
+    }
+
+    if (!result.uri) {
+      setGeneralError(
+        'No pudimos obtener la foto seleccionada.'
+      );
+      return;
+    }
+
+    updatePhotoState({
+      uri: result.uri,
+      base64: result.base64,
+      mimeType: result.mimeType,
+    });
+  };
+
+  const openPhotoOptions = () => {
+    Alert.alert(
+      'Foto de mascota',
+      'Elige cómo quieres actualizar la foto.',
+      [
+        {
+          text: 'Tomar foto',
+          onPress: () => {
+            void handlePhotoResult(takePetPhoto);
+          },
+        },
+        {
+          text: 'Elegir desde galería',
+          onPress: () => {
+            void handlePhotoResult(
+              pickPetPhotoFromLibrary
+            );
+          },
+        },
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+      ]
+    );
+  };
 
   const handleSave = async () => {
     if (!userId) {
@@ -106,29 +227,41 @@ export const usePetDetailScreen = () => {
     setGeneralError('');
 
     if (isCreateMode) {
-      const result = await createPet({
-        owner_id: userId,
-        name: name.trim(),
-        pet_type: petType,
-        gender:
-          gender === PetGender.Unknown
-            ? null
-            : gender,
-        breed: breed.trim() || null,
-        birth_date: birthDate || null,
-        age_years: null,
-        weight_kg: weightKg ? Number(weightKg) : null,
-        photo_url: null,
-        allergies: allergies
-          .split(',')
-          .map((item) => item.trim())
-          .filter(Boolean),
-        medical_conditions: medicalConditions
-          .split(',')
-          .map((item) => item.trim())
-          .filter(Boolean),
-        is_active: true,
-      });
+      const result = await createPet(
+        {
+          owner_id: userId,
+          name: name.trim(),
+          pet_type: petType,
+          gender:
+            gender === PetGender.Unknown
+              ? null
+              : gender,
+          breed: breed.trim() || null,
+          birth_date: birthDate || null,
+          age_years: null,
+          weight_kg: weightKg
+            ? Number(weightKg)
+            : null,
+          photo_url: null,
+          allergies: allergies
+            .split(',')
+            .map((item) => item.trim())
+            .filter(Boolean),
+          medical_conditions:
+            medicalConditions
+              .split(',')
+              .map((item) => item.trim())
+              .filter(Boolean),
+          is_active: true,
+        },
+        {
+          localPhotoUri: photoURL || undefined,
+          localPhotoBase64:
+            photoBase64 ?? undefined,
+          localPhotoMimeType:
+            photoMimeType ?? undefined,
+        }
+      );
 
       setIsSubmitting(false);
 
@@ -151,23 +284,45 @@ export const usePetDetailScreen = () => {
       return;
     }
 
-    const result = await updatePet(pet.id, {
-      name: name.trim(),
-      pet_type: petType,
-      gender:
-        gender === PetGender.Unknown ? null : gender,
-      breed: breed.trim() || null,
-      birth_date: birthDate || null,
-      weight_kg: weightKg ? Number(weightKg) : null,
-      allergies: allergies
-        .split(',')
-        .map((item) => item.trim())
-        .filter(Boolean),
-      medical_conditions: medicalConditions
-        .split(',')
-        .map((item) => item.trim())
-        .filter(Boolean),
-    });
+    const hasNewLocalPhoto =
+      Boolean(photoBase64) ||
+      photoURL.startsWith('file:');
+
+    const result = await updatePet(
+      pet.id,
+      {
+        name: name.trim(),
+        pet_type: petType,
+        gender:
+          gender === PetGender.Unknown
+            ? null
+            : gender,
+        breed: breed.trim() || null,
+        birth_date: birthDate || null,
+        weight_kg: weightKg
+          ? Number(weightKg)
+          : null,
+        allergies: allergies
+          .split(',')
+          .map((item) => item.trim())
+          .filter(Boolean),
+        medical_conditions:
+          medicalConditions
+            .split(',')
+            .map((item) => item.trim())
+            .filter(Boolean),
+      },
+      hasNewLocalPhoto
+        ? {
+            ownerId: userId,
+            localPhotoUri: photoURL,
+            localPhotoBase64:
+              photoBase64 ?? undefined,
+            localPhotoMimeType:
+              photoMimeType ?? undefined,
+          }
+        : undefined
+    );
 
     setIsSubmitting(false);
 
@@ -205,11 +360,24 @@ export const usePetDetailScreen = () => {
             }
 
             removePet(pet.id);
+            const remainingPets = usePetStore
+              .getState()
+              .pets;
+
+            if (remainingPets.length === 0) {
+              router.replace('/(app)/(tabs)');
+              return;
+            }
+
             router.back();
           },
         },
       ]
     );
+  };
+
+  const handleCancel = () => {
+    router.back();
   };
 
   return {
@@ -227,13 +395,21 @@ export const usePetDetailScreen = () => {
     setBirthDate,
     weightKg,
     setWeightKg,
+    photoURL,
     allergies,
     setAllergies,
     medicalConditions,
     setMedicalConditions,
     breedOptions,
+    isBirthDatePickerVisible,
+    formattedBirthDateLabel,
     generalError,
     isSubmitting,
+    openBirthDatePicker,
+    closeBirthDatePicker,
+    handleBirthDateChange,
+    openPhotoOptions,
+    handleCancel,
     handleSave,
     handleDelete,
   };

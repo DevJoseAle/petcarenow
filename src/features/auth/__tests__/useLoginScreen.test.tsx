@@ -144,7 +144,7 @@ describe('useLoginScreen', () => {
     expect(mockSetSession).toHaveBeenCalled();
     expect(mockMarkHasPets).toHaveBeenCalled();
     expect(mockReplace).toHaveBeenCalledWith(
-      '/(app)'
+      '/(app)/(tabs)'
     );
   });
 

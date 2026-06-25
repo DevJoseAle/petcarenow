@@ -13,6 +13,11 @@ interface CreatePetOptions {
   localPhotoMimeType?: string;
 }
 
+interface UpdatePetOptions
+  extends CreatePetOptions {
+  ownerId: string;
+}
+
 const hasMessage = (
   value: unknown
 ): value is { message: string } =>
@@ -36,6 +41,51 @@ const base64ToArrayBuffer = (base64: string) => {
   );
 
   return bytes.buffer;
+};
+
+const uploadPetPhoto = async ({
+  ownerId,
+  petId,
+  localPhotoUri,
+  localPhotoBase64,
+  localPhotoMimeType,
+}: UpdatePetOptions & { petId: string }) => {
+  if (!localPhotoUri) {
+    throw new Error(
+      'No encontramos la imagen local para subir.'
+    );
+  }
+
+  const filePath = `${ownerId}/${petId}/photo.jpg`;
+  let fileBody: ArrayBuffer;
+
+  if (localPhotoBase64) {
+    fileBody = base64ToArrayBuffer(
+      localPhotoBase64
+    );
+  } else {
+    const fileResponse = await fetch(localPhotoUri);
+    fileBody = await fileResponse.arrayBuffer();
+  }
+
+  const { error: uploadError } =
+    await supabase.storage
+      .from('pet-photos')
+      .upload(filePath, fileBody, {
+        contentType:
+          localPhotoMimeType || 'image/jpeg',
+        upsert: true,
+      });
+
+  if (uploadError) {
+    throw uploadError;
+  }
+
+  const { data } = supabase.storage
+    .from('pet-photos')
+    .getPublicUrl(filePath);
+
+  return data.publicUrl;
 };
 
 const mapPetError = (
@@ -87,6 +137,7 @@ export const getUserPets = async (
     .from('pets')
     .select('*')
     .eq('owner_id', ownerId)
+    .eq('is_active', true)
     .order('created_at', {
       ascending: true,
     });
@@ -124,46 +175,15 @@ export const createPet = async (
     }
 
     try {
-      const filePath = `${input.owner_id}/${data.id}/photo.jpg`;
-      let fileBody: ArrayBuffer;
-
-      if (options.localPhotoBase64) {
-        fileBody = base64ToArrayBuffer(
-          options.localPhotoBase64
-        );
-      } else if (options.localPhotoUri) {
-        const fileResponse = await fetch(
-          options.localPhotoUri
-        );
-        fileBody =
-          await fileResponse.arrayBuffer();
-      } else {
-        throw new Error(
-          'No encontramos la imagen local para subir.'
-        );
-      }
-
-      const { error: uploadError } =
-        await supabase.storage
-          .from('pet-photos')
-          .upload(filePath, fileBody, {
-            contentType:
-              options.localPhotoMimeType ||
-              'image/jpeg',
-            upsert: true,
-          });
-
-      if (uploadError) {
-        throw uploadError;
-      }
-
-      const { data: publicUrlData } =
-        supabase.storage
-          .from('pet-photos')
-          .getPublicUrl(filePath);
-
-      const photoUrl =
-        publicUrlData.publicUrl;
+      const photoUrl = await uploadPetPhoto({
+        ownerId: input.owner_id,
+        petId: data.id,
+        localPhotoUri: options.localPhotoUri,
+        localPhotoBase64:
+          options.localPhotoBase64,
+        localPhotoMimeType:
+          options.localPhotoMimeType,
+      });
 
       const {
         data: updatedPet,
@@ -207,7 +227,8 @@ export const createPet = async (
 
 export const updatePet = async (
   petId: string,
-  input: UpdatePetInput
+  input: UpdatePetInput,
+  options?: UpdatePetOptions
 ) => {
   try {
     const { data, error } = await supabase
@@ -224,10 +245,55 @@ export const updatePet = async (
       };
     }
 
-    return {
-      success: true as const,
-      data: data as Pet,
-    };
+    if (!options?.localPhotoUri) {
+      return {
+        success: true as const,
+        data: data as Pet,
+      };
+    }
+
+    try {
+      const photoUrl = await uploadPetPhoto({
+        ownerId: options.ownerId,
+        petId,
+        localPhotoUri: options.localPhotoUri,
+        localPhotoBase64:
+          options.localPhotoBase64,
+        localPhotoMimeType:
+          options.localPhotoMimeType,
+      });
+
+      const {
+        data: updatedPet,
+        error: photoUpdateError,
+      } = await supabase
+        .from('pets')
+        .update({
+          photo_url: photoUrl,
+        })
+        .eq('id', petId)
+        .select('*')
+        .single();
+
+      if (photoUpdateError || !updatedPet) {
+        throw photoUpdateError;
+      }
+
+      return {
+        success: true as const,
+        data: updatedPet as Pet,
+      };
+    } catch (photoError) {
+      return {
+        success: false as const,
+        error: {
+          code: 'UNEXPECTED_ERROR',
+          message: `Guardamos los cambios de la mascota, pero no pudimos actualizar su foto. ${getErrorMessage(
+            photoError
+          )}`,
+        },
+      };
+    }
   } catch (error) {
     return {
       success: false as const,
@@ -238,9 +304,11 @@ export const updatePet = async (
 
 export const deletePet = async (petId: string) => {
   try {
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('pets')
-      .delete()
+      .update({
+        is_active: false,
+      })
       .eq('id', petId);
 
     if (error) {
@@ -252,6 +320,7 @@ export const deletePet = async (petId: string) => {
 
     return {
       success: true as const,
+      data,
     };
   } catch (error) {
     return {

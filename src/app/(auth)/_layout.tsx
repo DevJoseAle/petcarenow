@@ -26,7 +26,7 @@ export default function AuthLayout() {
       !hasRedirectedRef.current
     ) {
       hasRedirectedRef.current = true;
-      router.replace('/(app)');
+      router.replace('/(app)/(tabs)');
     }
 
     if (!isAuthenticated) {

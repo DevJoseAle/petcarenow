@@ -58,7 +58,11 @@ export default function PetsScreen() {
         </View>
 
         <PrimaryButton
-          title="Agregar mascota"
+          title={
+            pets.length === 0
+              ? 'Agregar mascota'
+              : 'Agregar otra mascota'
+          }
           action={goToCreatePet}
         />
 
@@ -76,7 +80,7 @@ export default function PetsScreen() {
         ) : pets.length === 0 ? (
           <SectionState
             type="empty"
-            message="No encontramos mascotas todavía."
+            message="No encontramos mascotas activas todavía."
           />
         ) : (
           <View style={styles.list}>
