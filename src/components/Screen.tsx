@@ -15,7 +15,6 @@ interface Props {
 
 export function Screen({ children, scroll = false, horizontalPadding }: Props) {
   const headerHeight = useHeaderHeight();
-  console.log(headerHeight)
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const Container = scroll == true

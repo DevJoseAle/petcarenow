@@ -1,14 +1,15 @@
 import { ActivityIndicator, View } from 'react-native';
-import { Redirect } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
+import { useEffect, useRef } from 'react';
 
 import { createNativeHeaderOptions } from "@/config/UI/largeTitleScreen";
 import { useAuthStore } from '@/features/auth/store/auth.store';
 import { AuthRoutes } from "@/core/navigatorTypes/navigatorTypes";
 import { RouteDetails } from "@/core/navigatorTypes/navigatorTypesTitle";
-import { Stack } from "expo-router";
 
 
 export default function AuthLayout() {
+  const router = useRouter();
   const loginTitle = RouteDetails[AuthRoutes.Login].title;
   const isAuthenticated = useAuthStore(
     (state) => state.isAuthenticated
@@ -16,6 +17,22 @@ export default function AuthLayout() {
   const isHydrating = useAuthStore(
     (state) => state.isHydrating
   );
+  const hasRedirectedRef = useRef(false);
+
+  useEffect(() => {
+    if (
+      !isHydrating &&
+      isAuthenticated &&
+      !hasRedirectedRef.current
+    ) {
+      hasRedirectedRef.current = true;
+      router.replace('/(app)');
+    }
+
+    if (!isAuthenticated) {
+      hasRedirectedRef.current = false;
+    }
+  }, [isAuthenticated, isHydrating, router]);
 
   if (isHydrating) {
     return (
@@ -32,7 +49,7 @@ export default function AuthLayout() {
   }
 
   if (isAuthenticated) {
-    return <Redirect href="/(app)" />;
+    return null;
   }
   
   return (

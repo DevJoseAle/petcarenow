@@ -35,6 +35,14 @@
           }
         }
       ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "PetCareNow necesita acceso a tus fotos para elegir la imagen de tu mascota.",
+          "cameraPermission": "PetCareNow necesita acceso a tu cámara para tomar una foto de tu mascota.",
+          "microphonePermission": false
+        }
+      ],
       "@react-native-vector-icons/ionicons",
       "expo-secure-store"
     ],

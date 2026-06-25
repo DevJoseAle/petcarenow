@@ -22,7 +22,8 @@ describe('onboarding.store', () => {
   beforeEach(() => {
     useOnboardingStore.setState({
       isOnboarded: false,
-      isHydrating: true,
+      isHydrating: false,
+      hasHydrated: false,
     });
     jest.clearAllMocks();
   });
@@ -39,6 +40,7 @@ describe('onboarding.store', () => {
       {
         isOnboarded: true,
         isHydrating: false,
+        hasHydrated: true,
       }
     );
   });
@@ -59,6 +61,7 @@ describe('onboarding.store', () => {
       {
         isOnboarded: true,
         isHydrating: false,
+        hasHydrated: true,
       }
     );
   });
