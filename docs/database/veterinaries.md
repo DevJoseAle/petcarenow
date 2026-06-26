@@ -11,6 +11,7 @@ Represents veterinary clinics or emergency centers.
 | address      | text        | Yes      | -                 | Street address |
 | city         | text        | Yes      | -                 | City name |
 | phone        | text        | No       | -                 | Contact phone |
+| photo_url    | text        | No       | -                 | Public profile image URL |
 | latitude     | numeric     | Yes      | -                 | Latitude |
 | longitude    | numeric     | Yes      | -                 | Longitude |
 | is_emergency | boolean     | Yes      | false             | Supports emergencies |

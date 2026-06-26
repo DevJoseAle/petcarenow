@@ -4,9 +4,31 @@ export interface Veterinary {
   address: string;
   city: string;
   phone: string | null;
+  photo_url: string | null;
   latitude: number;
   longitude: number;
   is_emergency: boolean;
   is_24_7: boolean;
   description: string | null;
+}
+
+export interface VeterinaryFilters {
+  onlyEmergency: boolean;
+  only24Hours: boolean;
+}
+
+export interface LocationCoordinates {
+  latitude: number;
+  longitude: number;
+}
+
+export interface MapRegion
+  extends LocationCoordinates {
+  latitudeDelta: number;
+  longitudeDelta: number;
+}
+
+export interface VeterinaryWithDistance
+  extends Veterinary {
+  distanceKm: number | null;
 }
