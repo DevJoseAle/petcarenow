@@ -51,7 +51,7 @@
 * [x] Pets list screen
 * [x] Add pet screen base
 * [x] Edit pet screen base
-* [ ] Pet profile screen
+* [x] Pet profile / care profile screen
 * [x] Active pet selector
 
 ## Features
@@ -61,6 +61,7 @@
 * [x] Delete pet
 * [x] Upload pet photo
 * [x] Change active pet
+* [x] Care profile summary
 
 ## Tests
 
@@ -101,12 +102,12 @@
 
 # Next HU
 
-## HU-Perfil de cuidado
+## HU-Emergencia + Veterinarias
 
-* [ ] Definir especificación de perfil de cuidado
-* [ ] Implementar edición de datos clínicos/base
-* [ ] Integrar entry point para vacunas
-* [ ] Agregar tests de hooks/screens del flujo
+* [ ] Definir especificación de emergencia y veterinarias
+* [ ] Implementar listado de veterinarias
+* [ ] Implementar detalle de veterinaria
+* [ ] Implementar guardar veterinaria favorita
 
 ---
 
@@ -148,22 +149,20 @@
 
 ## Database
 
-* [ ] Create weight_logs table
-* [ ] Create symptom_logs table
-* [ ] Create medication_logs table
-* [ ] Create pet_notes table
+* [x] Define `pet_records` table
+* [ ] Apply `pet_records` SQL in Supabase if pending
 
 ## Weight Log
 
 ### UI
 
-* [ ] Weight form
-* [ ] Weight history
+* [x] Weight form
+* [x] Weight history
 
 ### Features
 
-* [ ] Create weight entry
-* [ ] View weight history
+* [x] Create weight entry
+* [x] View weight history
 
 ### Tests
 
@@ -175,13 +174,13 @@
 
 ### UI
 
-* [ ] Symptom form
-* [ ] Symptom history
+* [x] Symptom form
+* [x] Symptom history
 
 ### Features
 
-* [ ] Create symptom entry
-* [ ] View symptom history
+* [x] Create symptom entry
+* [x] View symptom history
 
 ### Tests
 
@@ -193,13 +192,13 @@
 
 ### UI
 
-* [ ] Medication form
-* [ ] Medication history
+* [x] Medication form
+* [x] Medication history
 
 ### Features
 
-* [ ] Create medication entry
-* [ ] View medication history
+* [x] Create medication entry
+* [x] View medication history
 
 ### Tests
 
@@ -211,14 +210,14 @@
 
 ### UI
 
-* [ ] Note form
-* [ ] Notes history
+* [x] Note form
+* [x] Notes history
 
 ### Features
 
-* [ ] Create note
-* [ ] Edit note
-* [ ] Delete note
+* [x] Create note
+* [x] Edit note
+* [x] Delete note
 
 ### Tests
 
@@ -230,34 +229,35 @@
 
 ## Specification
 
-* [ ] Create care events specification
+* [x] Create care events specification
 
 ## Database
 
-* [ ] Create care_events table
+* [x] Define `care_events` table
+* [ ] Apply `care_events` SQL in Supabase if pending
 
 ## UI
 
-* [ ] Events list screen
-* [ ] Create event screen
-* [ ] Edit event screen
-* [ ] Event detail screen
+* [x] Events list screen
+* [x] Create event screen
+* [x] Edit event screen
+* [x] Event detail screen
 
 ## Features
 
-* [ ] Create event
-* [ ] Edit event
-* [ ] Delete event
+* [x] Create event
+* [x] Edit event
+* [x] Delete event
 * [ ] Mark event completed
 
 ## Event Types
 
-* [ ] Vaccine
-* [ ] Deworming
-* [ ] Medication
-* [ ] Vet appointment
+* [x] Vaccine
+* [x] Deworming
+* [x] Medication
+* [x] Vet appointment
 * [ ] Grooming
-* [ ] Custom reminder
+* [x] Custom reminder
 
 ## Tests
 

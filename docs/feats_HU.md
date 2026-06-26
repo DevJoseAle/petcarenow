@@ -4,12 +4,12 @@ Tabs reales, navegación base, home visual inicial, CTA conectados, quick action
 HU-Mascotas - Cerrada
 Lista, mascota activa, cambiar mascota, agregar, editar y eliminar con confirmación.
 
-HU-Perfil de cuidado - Siguiente
+HU-Perfil de cuidado - Cerrada
 
-HU-Registro rápido - Pendiente
+HU-Registro rápido - Cerrada
 
-HU-Próximos cuidados / Calendario - Pendiente
+HU-Próximos cuidados / Calendario - Cerrada
 
-HU-Emergencia + Veterinarias - Pendiente
+HU-Emergencia + Veterinarias - Siguiente
 
 HU-Más - Pendiente

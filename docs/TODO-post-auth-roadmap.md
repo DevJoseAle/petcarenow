@@ -8,12 +8,12 @@
 - [x] Home base navegable
 - [x] Tabs reales de la app
 - [x] CRUD completo de mascotas
-- [ ] Perfil de cuidado
-- [ ] Registro rápido
-- [ ] Próximos cuidados / calendario
+- [x] Perfil de cuidado
+- [x] Registro rápido
+- [x] Próximos cuidados / calendario
 - [ ] Emergencias y veterinarias
 - [ ] Veterinarias guardadas
-- [ ] Vacunas ocultas pero implementadas
+- [x] Vacunas ocultas pero implementadas
 
 ## Backlog Activo
 
@@ -30,7 +30,7 @@
 - [x] Implementar contratos de `care_events`
 - [x] Implementar contratos de `veterinaries`
 - [x] Implementar contratos de `saved_veterinaries`
-- [x] Conectar servicios mock-first mientras no existan tablas nuevas en Supabase
+- [x] Conectar servicios reales con Supabase para `pet_records` y `care_events`
 
 ### Home
 
@@ -54,16 +54,19 @@
 
 ### Registros
 
-- [ ] Crear formulario base para peso, síntoma, medicación y nota
-- [ ] Guardar fecha/hora combinadas
+- [x] Crear formulario base para peso, síntoma, medicación y nota
+- [x] Guardar fecha/hora combinadas
+- [x] Crear pantalla/tab dedicado de historial de registros
+- [x] Crear detalle, edición y eliminación de registros
 - [ ] Refrescar home luego del registro
 
 ### Calendario y Cuidados
 
-- [ ] Crear listado de eventos
-- [ ] Crear formulario de evento programado
-- [ ] Mostrar eventos próximos en home
-- [ ] Exponer vacunas como subset de `care_events`
+- [x] Crear listado de eventos
+- [x] Crear formulario de evento programado
+- [x] Crear detalle, edición y eliminación de eventos
+- [x] Mostrar eventos próximos en home
+- [x] Exponer vacunas como subset de `care_events`
 
 ### Emergencia y Veterinarias
 
@@ -82,11 +85,11 @@
 
 ## Siguiente HU
 
-- HU-Perfil de cuidado
-- Objetivo: permitir editar el perfil clínico/base de la mascota activa y preparar el punto de entrada para vacunas dentro del flujo de cuidado.
+- HU-Emergencia + Veterinarias
+- Objetivo: permitir al usuario encontrar veterinarias, consultar detalle y guardar favoritas desde un flujo de emergencia útil y accionable.
 
 ## Notas
 
-- `veterinaries` y `saved_veterinaries` se implementan mock-first dentro de la app hasta que existan tablas.
-- `pet_records` y `care_events` quedan con servicios listos para intercambiar el backend sin rehacer pantallas.
+- `veterinaries` y `saved_veterinaries` siguen pendientes de backend final o validación de tablas reales.
+- `pet_records` y `care_events` ya cuentan con contrato y servicios conectados a Supabase.
 - Vacunas se implementan usando `care_events` con `event_type = vaccine`.
