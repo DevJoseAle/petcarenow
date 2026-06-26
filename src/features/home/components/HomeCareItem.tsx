@@ -33,9 +33,12 @@ export default function HomeCareItem({
   return (
     <Container
       {...(onPress ? { onPress } : {})}
-      style={styles.row}
+      style={[
+        styles.row,
+        { borderColor: theme.border },
+      ]}
     >
-      <View style={styles.left}>
+      <View style={styles.main}>
         <View
           style={[
             styles.iconWrap,
@@ -65,21 +68,21 @@ export default function HomeCareItem({
           >
             {subtitle}
           </Text>
+          {tagLabel ? (
+            <View
+              style={[
+                styles.tag,
+                { backgroundColor: tagColor },
+              ]}
+            >
+              <Text style={styles.tagText}>
+                {tagLabel}
+              </Text>
+            </View>
+          ) : null}
         </View>
       </View>
-      <View style={styles.right}>
-        {tagLabel ? (
-          <View
-            style={[
-              styles.tag,
-              { backgroundColor: tagColor },
-            ]}
-          >
-            <Text style={styles.tagText}>
-              {tagLabel}
-            </Text>
-          </View>
-        ) : null}
+      <View style={styles.chevronWrap}>
         <Ionicons
           name="chevron-forward"
           size={20}
@@ -95,46 +98,60 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    gap: 14,
-    paddingVertical: 8,
+    gap: 16,
+    paddingVertical: 18,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderRadius: 24,
+    backgroundColor: '#FFFFFF',
+    shadowColor: '#000000',
+    shadowOpacity: 0.04,
+    shadowRadius: 14,
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
+    elevation: 2,
   },
-  left: {
+  main: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 14,
+    gap: 16,
   },
   iconWrap: {
-    width: 54,
-    height: 54,
+    width: 64,
+    height: 64,
     borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
   },
   copy: {
     flex: 1,
-    gap: 4,
+    gap: 9,
   },
   title: {
-    fontSize: 18,
-    fontWeight: '700',
+    fontSize: 17,
+    fontWeight: '800',
+    lineHeight: 23,
   },
   subtitle: {
     fontSize: 15,
+    lineHeight: 21,
   },
-  right: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
+  chevronWrap: {
+    marginLeft: 8,
+    alignSelf: 'center',
   },
   tag: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
+    alignSelf: 'flex-start',
+    paddingHorizontal: 12,
+    paddingVertical: 7,
     borderRadius: 999,
   },
   tagText: {
     color: '#4C6FFF',
     fontWeight: '700',
-    fontSize: 14,
+    fontSize: 13,
   },
 });

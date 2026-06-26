@@ -311,8 +311,8 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   content: {
-    paddingBottom: 36,
-    gap: 18,
+    paddingBottom: 44,
+    gap: 22,
   },
   headerRow: {
     flexDirection: 'row',
@@ -366,7 +366,7 @@ const styles = StyleSheet.create({
     paddingRight: 10,
   },
   careList: {
-    gap: 10,
+    gap: 14,
   },
   emptyState: {
     flex: 1,
