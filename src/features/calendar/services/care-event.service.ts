@@ -1,141 +1,207 @@
+import { supabase } from '@/config/supabase';
 import type {
   CareEvent,
   CreateCareEventInput,
+  UpdateCareEventInput,
 } from '../types/care-event.types';
 
-let careEventsMock: CareEvent[] = [
-  {
-    id: 'care-1',
-    pet_id: 'mock-pet',
-    owner_id: 'mock-owner',
-    event_type: 'deworming',
-    title: 'Antiparasitario',
-    description: 'Dosis trimestral',
-    starts_at: new Date(
-      Date.now() + 5 * 24 * 60 * 60 * 1000
-    ).toISOString(),
-    ends_at: null,
-    status: 'scheduled',
-    reminder_at: null,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 'care-2',
-    pet_id: 'mock-pet',
-    owner_id: 'mock-owner',
-    event_type: 'consultation',
-    title: 'Control veterinario',
-    description: 'Chequeo general',
-    starts_at: '',
-    ends_at: null,
-    status: 'scheduled',
-    reminder_at: null,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 'care-3',
-    pet_id: 'mock-pet',
-    owner_id: 'mock-owner',
-    event_type: 'vaccine',
-    title: 'Vacuna anual',
-    description: 'Refuerzo anual',
-    starts_at: new Date(
-      Date.now() + 10 * 24 * 60 * 60 * 1000
-    ).toISOString(),
-    ends_at: null,
-    status: 'scheduled',
-    reminder_at: null,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-];
+const hasMessage = (
+  value: unknown
+): value is { message: string } =>
+  typeof value === 'object' &&
+  value !== null &&
+  'message' in value &&
+  typeof value.message === 'string';
 
-const createMockId = () =>
-  `event-${Date.now()}-${Math.random()
-    .toString(36)
-    .slice(2, 8)}`;
+const getErrorMessage = (error: unknown) =>
+  error instanceof Error
+    ? error.message
+    : hasMessage(error)
+    ? error.message
+    : 'Error desconocido';
 
-const matchOwnerOrFallback = (
-  event: CareEvent,
-  ownerId: string
-) =>
-  event.owner_id === ownerId ||
-  event.owner_id === 'mock-owner';
+const mapCareEventError = (error: unknown) => {
+  const message =
+    getErrorMessage(error).toLowerCase();
 
-const matchPetOrFallback = (
-  event: CareEvent,
-  petId: string
-) =>
-  event.pet_id === petId ||
-  event.pet_id === 'mock-pet';
+  if (
+    message.includes('network') ||
+    message.includes('fetch') ||
+    message.includes('internet')
+  ) {
+    return new Error(
+      'No pudimos conectarnos para cargar los cuidados.'
+    );
+  }
+
+  return new Error(
+    `No pudimos procesar los cuidados. ${getErrorMessage(
+      error
+    )}`
+  );
+};
 
 export const listCareEvents = async (
   ownerId: string
 ) => {
-  return careEventsMock
-    .filter((event) =>
-      matchOwnerOrFallback(event, ownerId)
-    )
-    .sort((left, right) =>
-      left.starts_at.localeCompare(right.starts_at)
-    );
+  const { data, error } = await supabase
+    .from('care_events')
+    .select('*')
+    .eq('owner_id', ownerId)
+    .order('starts_at', {
+      ascending: true,
+    });
+
+  if (error) {
+    throw mapCareEventError(error);
+  }
+
+  return (data ?? []) as CareEvent[];
 };
 
 export const listUpcomingCareEventsByPet = async (
   ownerId: string,
   petId: string
 ) => {
-  return careEventsMock
-    .filter((event) =>
-      matchOwnerOrFallback(event, ownerId)
-    )
-    .filter((event) =>
-      matchPetOrFallback(event, petId)
-    )
-    .filter((event) => event.status === 'scheduled')
-    .sort((left, right) =>
-      left.starts_at.localeCompare(right.starts_at)
-    );
+  const { data, error } = await supabase
+    .from('care_events')
+    .select('*')
+    .eq('owner_id', ownerId)
+    .eq('pet_id', petId)
+    .eq('status', 'scheduled')
+    .order('starts_at', {
+      ascending: true,
+    });
+
+  if (error) {
+    throw mapCareEventError(error);
+  }
+
+  return (data ?? []) as CareEvent[];
 };
 
 export const listVaccinesByPet = async (
   ownerId: string,
   petId: string
 ) => {
-  return careEventsMock.filter(
-    (event) =>
-      matchOwnerOrFallback(event, ownerId) &&
-      matchPetOrFallback(event, petId) &&
-      event.event_type === 'vaccine'
-  );
+  const { data, error } = await supabase
+    .from('care_events')
+    .select('*')
+    .eq('owner_id', ownerId)
+    .eq('pet_id', petId)
+    .eq('event_type', 'vaccine')
+    .neq('status', 'cancelled')
+    .order('starts_at', {
+      ascending: false,
+    });
+
+  if (error) {
+    throw mapCareEventError(error);
+  }
+
+  return (data ?? []) as CareEvent[];
+};
+
+export const getLatestConsultationByPet = async (
+  ownerId: string,
+  petId: string
+) => {
+  const { data, error } = await supabase
+    .from('care_events')
+    .select('*')
+    .eq('owner_id', ownerId)
+    .eq('pet_id', petId)
+    .eq('event_type', 'consultation')
+    .eq('status', 'completed')
+    .order('starts_at', {
+      ascending: false,
+    })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    throw mapCareEventError(error);
+  }
+
+  return (data as CareEvent | null) ?? null;
 };
 
 export const createCareEvent = async (
   input: CreateCareEventInput
 ) => {
-  const now = new Date().toISOString();
-  const nextEvent: CareEvent = {
-    id: createMockId(),
-    pet_id: input.pet_id,
-    owner_id: input.owner_id,
-    event_type: input.event_type,
-    title: input.title,
-    description: input.description ?? null,
-    starts_at: input.starts_at,
-    ends_at: input.ends_at ?? null,
-    status: 'scheduled',
-    reminder_at: input.reminder_at ?? null,
-    created_at: now,
-    updated_at: now,
-  };
+  const { data, error } = await supabase
+    .from('care_events')
+    .insert({
+      pet_id: input.pet_id,
+      owner_id: input.owner_id,
+      event_type: input.event_type,
+      title: input.title,
+      description: input.description ?? null,
+      starts_at: input.starts_at,
+      ends_at: input.ends_at ?? null,
+      status: input.status ?? 'scheduled',
+      reminder_at: input.reminder_at ?? null,
+      metadata: input.metadata ?? null,
+    })
+    .select('*')
+    .single();
 
-  careEventsMock = [nextEvent, ...careEventsMock];
+  if (error || !data) {
+    throw mapCareEventError(error);
+  }
 
-  return nextEvent;
+  return data as CareEvent;
 };
 
-export const __resetCareEventsMock = () => {
-  careEventsMock = [];
+export const getCareEventById = async (
+  ownerId: string,
+  eventId: string
+) => {
+  const { data, error } = await supabase
+    .from('care_events')
+    .select('*')
+    .eq('owner_id', ownerId)
+    .eq('id', eventId)
+    .maybeSingle();
+
+  if (error) {
+    throw mapCareEventError(error);
+  }
+
+  return (data as CareEvent | null) ?? null;
+};
+
+export const updateCareEvent = async (
+  ownerId: string,
+  eventId: string,
+  input: UpdateCareEventInput
+) => {
+  const { data, error } = await supabase
+    .from('care_events')
+    .update(input)
+    .eq('owner_id', ownerId)
+    .eq('id', eventId)
+    .select('*')
+    .single();
+
+  if (error || !data) {
+    throw mapCareEventError(error);
+  }
+
+  return data as CareEvent;
+};
+
+export const deleteCareEvent = async (
+  ownerId: string,
+  eventId: string
+) => {
+  const { error } = await supabase
+    .from('care_events')
+    .delete()
+    .eq('owner_id', ownerId)
+    .eq('id', eventId);
+
+  if (error) {
+    throw mapCareEventError(error);
+  }
 };

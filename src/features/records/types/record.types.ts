@@ -28,3 +28,12 @@ export interface CreatePetRecordInput {
   value_unit?: string | null;
   metadata?: Record<string, string> | null;
 }
+
+export interface UpdatePetRecordInput {
+  record_type?: PetRecordType;
+  recorded_at?: string;
+  description?: string;
+  value_numeric?: number | null;
+  value_unit?: string | null;
+  metadata?: Record<string, string> | null;
+}

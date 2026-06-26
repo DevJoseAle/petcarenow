@@ -120,6 +120,8 @@ export default function AppLayout() {
       <Stack.Screen name="pet-detail" />
       <Stack.Screen name="pet-onboarding" />
       <Stack.Screen name="care-profile" />
+      <Stack.Screen name="event-detail" />
+      <Stack.Screen name="record-detail" />
       <Stack.Screen name="record-entry" />
       <Stack.Screen name="event-entry" />
       <Stack.Screen name="veterinaries" />

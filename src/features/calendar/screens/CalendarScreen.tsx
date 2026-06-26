@@ -1,4 +1,5 @@
 import {
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
@@ -16,9 +17,12 @@ export default function CalendarScreen() {
   const {
     events,
     isHydrating,
+    isRefreshing,
     generalError,
     retry,
+    refresh,
     goToEventEntry,
+    goToEventDetail,
   } = useCalendarScreen();
 
   return (
@@ -26,6 +30,12 @@ export default function CalendarScreen() {
       <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={refresh}
+          />
+        }
       >
         <Text
           style={[
@@ -83,6 +93,9 @@ export default function CalendarScreen() {
                         minute: '2-digit',
                       }).format(new Date(event.starts_at))
                     : 'Sin fecha'
+                }
+                onPress={() =>
+                  goToEventDetail(event.id)
                 }
               />
             ))}

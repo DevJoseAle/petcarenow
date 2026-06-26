@@ -58,15 +58,15 @@
 
 * [x] Create pet base
 * [x] Edit pet base
-* [ ] Delete pet
-* [ ] Upload pet photo
+* [x] Delete pet
+* [x] Upload pet photo
 * [x] Change active pet
 
 ## Tests
 
 * [ ] Pet screens tests
 * [ ] Pet view model tests
-* [ ] Pet service tests
+* [x] Pet service tests
 
 ---
 
@@ -101,12 +101,12 @@
 
 # Next HU
 
-## HU-Mascotas
+## HU-Perfil de cuidado
 
-* [ ] Completar alta adicional de mascota
-* [ ] Completar edición de mascota existente
-* [ ] Agregar eliminación con confirmación
-* [ ] Definir pantalla de perfil de mascota
+* [ ] Definir especificación de perfil de cuidado
+* [ ] Implementar edición de datos clínicos/base
+* [ ] Integrar entry point para vacunas
+* [ ] Agregar tests de hooks/screens del flujo
 
 ---
 

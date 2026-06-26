@@ -1,10 +1,14 @@
 import {
+  Platform,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
   View,
 } from 'react-native';
+import DateTimePicker from '@expo/ui/community/datetime-picker';
+import Ionicons from '@react-native-vector-icons/ionicons';
 import { Screen } from '@/components/Screen';
 import PrimaryButton from '@/components/PrimaryButton';
 import { useTheme } from '@/core/theme/useTheme';
@@ -22,6 +26,7 @@ const eventTypeOptions = [
 export default function EventEntryScreen() {
   const theme = useTheme();
   const {
+    isEditMode,
     eventType,
     setEventType,
     title,
@@ -29,11 +34,16 @@ export default function EventEntryScreen() {
     description,
     setDescription,
     date,
-    setDate,
+    formattedDateLabel,
     time,
-    setTime,
+    isDatePickerVisible,
+    openDatePicker,
+    closeDatePicker,
+    handleDateChange,
+    handleTimeChange,
     generalError,
     isSubmitting,
+    handleBack,
     handleSubmit,
   } = useEventEntryScreen();
 
@@ -43,13 +53,34 @@ export default function EventEntryScreen() {
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
+        <Pressable
+          onPress={handleBack}
+          style={styles.backButton}
+        >
+          <Ionicons
+            name="arrow-back"
+            size={20}
+            color={theme.textPrimary}
+          />
+          <Text
+            style={[
+              styles.backLabel,
+              { color: theme.textPrimary },
+            ]}
+          >
+            Atrás
+          </Text>
+        </Pressable>
+
         <Text
           style={[
             styles.title,
             { color: theme.textPrimary },
           ]}
         >
-          Programar cuidado
+          {isEditMode
+            ? 'Editar evento'
+            : 'Programar cuidado'}
         </Text>
 
         <View style={styles.rowWrap}>
@@ -93,24 +124,53 @@ export default function EventEntryScreen() {
           ]}
           multiline
         />
-        <TextInput
-          value={date}
-          onChangeText={setDate}
-          placeholder="Fecha (YYYY-MM-DD)"
-          placeholderTextColor={theme.textSecondary}
+        <Pressable
+          onPress={openDatePicker}
           style={[
             styles.input,
             {
               borderColor: theme.border,
-              color: theme.textPrimary,
             },
           ]}
-        />
+        >
+          <Text
+            style={{
+              color: theme.textPrimary,
+              fontSize: 16,
+            }}
+          >
+            {formattedDateLabel}
+          </Text>
+        </Pressable>
+        {isDatePickerVisible ? (
+          <View style={styles.datePickerWrapper}>
+            <DateTimePicker
+              value={date ? new Date(date) : new Date()}
+              mode="date"
+              display={
+                Platform.OS === 'ios'
+                  ? 'inline'
+                  : 'default'
+              }
+              presentation={
+                Platform.OS === 'android'
+                  ? 'dialog'
+                  : 'inline'
+              }
+              onValueChange={(_event, nextDate) =>
+                handleDateChange(nextDate)
+              }
+              onDismiss={closeDatePicker}
+            />
+          </View>
+        ) : null}
         <TextInput
           value={time}
-          onChangeText={setTime}
+          onChangeText={handleTimeChange}
           placeholder="Hora (HH:mm)"
           placeholderTextColor={theme.textSecondary}
+          keyboardType="number-pad"
+          maxLength={5}
           style={[
             styles.input,
             {
@@ -130,11 +190,26 @@ export default function EventEntryScreen() {
           title={
             isSubmitting
               ? 'Guardando...'
+              : isEditMode
+              ? 'Guardar cambios'
               : 'Guardar evento'
           }
           action={handleSubmit}
           disabled={isSubmitting}
         />
+        <Pressable
+          onPress={handleBack}
+          style={styles.secondaryBack}
+        >
+          <Text
+            style={[
+              styles.secondaryBackLabel,
+              { color: theme.textSecondary },
+            ]}
+          >
+            Volver
+          </Text>
+        </Pressable>
       </ScrollView>
     </Screen>
   );
@@ -149,6 +224,16 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: '800',
   },
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    alignSelf: 'flex-start',
+  },
+  backLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
   rowWrap: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -160,6 +245,10 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     fontSize: 16,
   },
+  datePickerWrapper: {
+    borderRadius: 18,
+    overflow: 'hidden',
+  },
   textArea: {
     minHeight: 110,
     textAlignVertical: 'top',
@@ -167,5 +256,13 @@ const styles = StyleSheet.create({
   errorText: {
     color: '#DC2626',
     fontSize: 14,
+  },
+  secondaryBack: {
+    alignSelf: 'center',
+    marginTop: 4,
+  },
+  secondaryBackLabel: {
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

@@ -99,6 +99,23 @@ export default function TabsLayout() {
         </NativeTabs.Trigger>
 
         <NativeTabs.Trigger
+          name="records"
+          disableAutomaticContentInsets
+        >
+          <NativeTabs.Trigger.Icon
+            sf={{
+              default: 'list.bullet.rectangle',
+              selected:
+                'list.bullet.rectangle.fill',
+            }}
+            drawable="ic_menu_agenda"
+          />
+          <NativeTabs.Trigger.Label>
+            Registros
+          </NativeTabs.Trigger.Label>
+        </NativeTabs.Trigger>
+
+        <NativeTabs.Trigger
           name="calendar"
           disableAutomaticContentInsets
         >
@@ -140,7 +157,10 @@ export default function TabsLayout() {
           onPress={() => setIsQuickActionsOpen(true)}
           style={[
             styles.plusButtonPressable,
-            { bottom: insets.bottom + 6 },
+            {
+              bottom: insets.bottom + 48,
+              right: 20,
+            },
           ]}
         >
           {canUseGlassButton ? (
@@ -198,7 +218,6 @@ const styles = StyleSheet.create({
   },
   plusButtonPressable: {
     position: 'absolute',
-    alignSelf: 'center',
   },
   plusButtonGlass: {
     width: 66,

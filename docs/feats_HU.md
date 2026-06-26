@@ -1,10 +1,10 @@
 HU-Home Shell - Cerrada
 Tabs reales, navegación base, home visual inicial, CTA conectados, quick actions y shell nativo.
 
-HU-Mascotas - Siguiente
+HU-Mascotas - Cerrada
 Lista, mascota activa, cambiar mascota, agregar, editar y eliminar con confirmación.
 
-HU-Perfil de cuidado - Pendiente
+HU-Perfil de cuidado - Siguiente
 
 HU-Registro rápido - Pendiente
 

@@ -7,7 +7,7 @@
 - [x] Onboarding de primera mascota
 - [x] Home base navegable
 - [x] Tabs reales de la app
-- [ ] CRUD completo de mascotas
+- [x] CRUD completo de mascotas
 - [ ] Perfil de cuidado
 - [ ] Registro rápido
 - [ ] Próximos cuidados / calendario
@@ -25,7 +25,7 @@
 
 ### Datos
 
-- [ ] Mantener `pets` como entidad real de mascota
+- [x] Mantener `pets` como entidad real de mascota
 - [x] Implementar contratos de `pet_records`
 - [x] Implementar contratos de `care_events`
 - [x] Implementar contratos de `veterinaries`
@@ -48,9 +48,9 @@
 - [x] Crear store global de mascota activa
 - [x] Listar mascotas del usuario
 - [x] Seleccionar mascota activa
-- [ ] Permitir agregar mascota reutilizando el onboarding actual
-- [ ] Permitir editar mascota
-- [ ] Permitir eliminar mascota con confirmación
+- [x] Permitir agregar mascota reutilizando el onboarding actual
+- [x] Permitir editar mascota
+- [x] Permitir eliminar mascota con confirmación
 
 ### Registros
 
@@ -82,8 +82,8 @@
 
 ## Siguiente HU
 
-- HU-Mascotas
-- Objetivo: cerrar el CRUD completo de mascotas con alta adicional, edición, eliminación con confirmación y mejor flujo de mascota activa.
+- HU-Perfil de cuidado
+- Objetivo: permitir editar el perfil clínico/base de la mascota activa y preparar el punto de entrada para vacunas dentro del flujo de cuidado.
 
 ## Notas
 
