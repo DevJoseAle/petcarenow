@@ -60,7 +60,8 @@ const styles = StyleSheet.create({
   card: {
     borderWidth: 1,
     borderRadius: 28,
-    padding: 18,
+    paddingHorizontal: 18,
+    paddingVertical: 20,
     shadowColor: '#000000',
     shadowOpacity: 0.05,
     shadowRadius: 16,
@@ -73,16 +74,16 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 14,
+    alignItems: 'flex-start',
+    marginBottom: 18,
   },
   title: {
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: '800',
   },
   actionLabel: {
     color: '#6D4DFF',
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '600',
   },
 });
