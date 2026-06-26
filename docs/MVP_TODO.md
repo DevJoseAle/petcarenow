@@ -1,0 +1,372 @@
+# PetCareNow MVP TODO
+
+## Current Status
+
+### Authentication
+
+* [x] Sign In
+* [x] Sign Up
+* [x] Session Persistence
+* [x] User Profile Creation
+* [x] Apple Sign In
+
+### Database
+
+* [x] profiles
+* [x] pets
+* [x] pet photo storage bucket
+
+---
+
+# Foundation
+
+## Design System
+
+* [ ] Define color palette
+* [ ] Define spacing tokens
+* [ ] Define typography tokens
+* [ ] Define icon strategy
+* [ ] Create reusable Screen component
+* [ ] Create reusable Button component
+* [ ] Create reusable TextField component
+* [ ] Create reusable Card component
+* [ ] Create reusable EmptyState component
+* [ ] Create reusable LoadingState component
+
+---
+
+# Pet Management
+
+## Specification
+
+* [ ] Create pets specification
+
+## Database
+
+* [ ] Validate pets schema
+* [ ] Validate storage integration
+
+## UI
+
+* [x] Pets list screen
+* [x] Add pet screen base
+* [x] Edit pet screen base
+* [x] Pet profile / care profile screen
+* [x] Active pet selector
+
+## Features
+
+* [x] Create pet base
+* [x] Edit pet base
+* [x] Delete pet
+* [x] Upload pet photo
+* [x] Change active pet
+* [x] Care profile summary
+
+## Tests
+
+* [ ] Pet screens tests
+* [ ] Pet view model tests
+* [x] Pet service tests
+
+---
+
+# Home
+
+## Specification
+
+* [x] Create home specification
+
+## UI
+
+* [x] Header section
+* [x] Active pet card
+* [x] Emergency card
+* [x] Today for pet card behind flag
+* [x] Quick log section
+* [x] Upcoming care section
+* [x] Care profile section
+
+## Navigation
+
+* [x] Active pet card → Pet profile
+* [x] Change pet action
+* [x] Emergency action
+* [x] Calendar action
+
+## Tests
+
+* [ ] Home UI tests
+
+---
+
+# Next HU
+
+## HU-Emergencia + Veterinarias
+
+* [ ] Definir especificación de emergencia y veterinarias
+* [ ] Implementar listado de veterinarias
+* [ ] Implementar detalle de veterinaria
+* [ ] Implementar guardar veterinaria favorita
+
+---
+
+# Emergency
+
+## Specification
+
+* [ ] Create emergency specification
+
+## Database
+
+* [ ] Create veterinary_clinics table
+* [ ] Seed initial clinics
+
+## UI
+
+* [ ] Emergency screen
+* [ ] Clinic card
+* [ ] Clinic detail screen
+
+## Features
+
+* [ ] List clinics
+* [ ] Call clinic
+* [ ] Open maps
+
+## Tests
+
+* [ ] Emergency screen tests
+* [ ] Emergency service tests
+
+---
+
+# Quick Log
+
+## Specification
+
+* [ ] Create quick log specification
+
+## Database
+
+* [x] Define `pet_records` table
+* [ ] Apply `pet_records` SQL in Supabase if pending
+
+## Weight Log
+
+### UI
+
+* [x] Weight form
+* [x] Weight history
+
+### Features
+
+* [x] Create weight entry
+* [x] View weight history
+
+### Tests
+
+* [ ] Weight tests
+
+---
+
+## Symptom Log
+
+### UI
+
+* [x] Symptom form
+* [x] Symptom history
+
+### Features
+
+* [x] Create symptom entry
+* [x] View symptom history
+
+### Tests
+
+* [ ] Symptom tests
+
+---
+
+## Medication Log
+
+### UI
+
+* [x] Medication form
+* [x] Medication history
+
+### Features
+
+* [x] Create medication entry
+* [x] View medication history
+
+### Tests
+
+* [ ] Medication tests
+
+---
+
+## Notes
+
+### UI
+
+* [x] Note form
+* [x] Notes history
+
+### Features
+
+* [x] Create note
+* [x] Edit note
+* [x] Delete note
+
+### Tests
+
+* [ ] Notes tests
+
+---
+
+# Care Events
+
+## Specification
+
+* [x] Create care events specification
+
+## Database
+
+* [x] Define `care_events` table
+* [ ] Apply `care_events` SQL in Supabase if pending
+
+## UI
+
+* [x] Events list screen
+* [x] Create event screen
+* [x] Edit event screen
+* [x] Event detail screen
+
+## Features
+
+* [x] Create event
+* [x] Edit event
+* [x] Delete event
+* [ ] Mark event completed
+
+## Event Types
+
+* [x] Vaccine
+* [x] Deworming
+* [x] Medication
+* [x] Vet appointment
+* [ ] Grooming
+* [x] Custom reminder
+
+## Tests
+
+* [ ] Care events tests
+
+---
+
+# Calendar
+
+## Specification
+
+* [ ] Create calendar specification
+
+## UI
+
+* [ ] Calendar screen
+* [ ] Day view
+* [ ] Upcoming events view
+
+## Features
+
+* [ ] Display care events
+* [ ] Open event details
+* [ ] Create event from calendar
+
+## Tests
+
+* [ ] Calendar tests
+
+---
+
+# Notifications
+
+## Specification
+
+* [ ] Create notifications specification
+
+## Features
+
+* [ ] Vaccine reminders
+* [ ] Medication reminders
+* [ ] Care event reminders
+
+## Tests
+
+* [ ] Notification tests
+
+---
+
+# More
+
+## UI
+
+* [ ] User profile screen
+* [ ] Settings screen
+* [ ] Notifications settings
+* [ ] Subscription screen
+* [ ] Help screen
+* [ ] Legal screen
+
+## Features
+
+* [ ] Sign out
+* [ ] Edit profile
+* [ ] Notification preferences
+
+## Tests
+
+* [ ] More section tests
+
+---
+
+# MVP Release Checklist
+
+## Product
+
+* [ ] User can create pets
+* [ ] User can edit pets
+* [ ] User can upload pet photos
+* [ ] User can switch active pet
+
+## Home
+
+* [ ] Home displays active pet
+* [ ] Home displays upcoming care
+* [ ] Home displays quick actions
+
+## Emergency
+
+* [ ] User can find veterinary clinics
+* [ ] User can call a clinic
+* [ ] User can open directions
+
+## Tracking
+
+* [ ] User can register weight
+* [ ] User can register symptoms
+* [ ] User can register medication
+* [ ] User can create notes
+
+## Planning
+
+* [ ] User can create care events
+* [ ] User can view calendar
+* [ ] User can receive reminders
+
+## Quality
+
+* [ ] Documentation updated
+* [ ] Tests completed
+* [ ] Manual QA completed
+* [ ] MVP ready for TestFlight

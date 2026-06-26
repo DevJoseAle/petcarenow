@@ -193,7 +193,7 @@ describe('usePetOnboardingScreen', () => {
     expect(mockedCreatePet).toHaveBeenCalled();
     expect(mockMarkHasPets).toHaveBeenCalled();
     expect(mockReplace).toHaveBeenCalledWith(
-      '/(app)'
+      '/(app)/(tabs)'
     );
   });
 });

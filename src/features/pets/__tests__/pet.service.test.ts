@@ -1,6 +1,9 @@
 import {
   createPet,
+  deletePet,
+  getUserPets,
   hasRegisteredPets,
+  updatePet,
 } from '../services/pet.service';
 import { supabase } from '@/config/supabase';
 import {
@@ -59,6 +62,47 @@ describe('pet.service', () => {
     await expect(
       hasRegisteredPets('user-1')
     ).resolves.toBe(false);
+  });
+
+  test('lists only active pets for the user', async () => {
+    const order = jest.fn().mockResolvedValue({
+      data: [
+        {
+          id: 'pet-1',
+          owner_id: 'user-1',
+          name: 'Luna',
+          is_active: true,
+        },
+      ],
+      error: null,
+    });
+    const activeEq = jest.fn(() => ({ order }));
+    const ownerEq = jest.fn(() => ({
+      eq: activeEq,
+    }));
+    const select = jest.fn(() => ({ eq: ownerEq }));
+
+    mockedSupabase.from.mockReturnValue({
+      select,
+    } as never);
+
+    await expect(
+      getUserPets('user-1')
+    ).resolves.toEqual([
+      expect.objectContaining({
+        id: 'pet-1',
+        is_active: true,
+      }),
+    ]);
+
+    expect(ownerEq).toHaveBeenCalledWith(
+      'owner_id',
+      'user-1'
+    );
+    expect(activeEq).toHaveBeenCalledWith(
+      'is_active',
+      true
+    );
   });
 
   test('creates pet and returns inserted row', async () => {
@@ -259,6 +303,153 @@ describe('pet.service', () => {
         created_at: null,
         updated_at: null,
       },
+    });
+  });
+
+  test('updates pet photo and stores new public url', async () => {
+    const photoUrl =
+      'https://example.com/user-1/pet-1/photo.jpg';
+    const base64Photo = 'cGV0LXBob3Rv';
+
+    const updatePetSingle = jest
+      .fn()
+      .mockResolvedValueOnce({
+        data: {
+          id: 'pet-1',
+          owner_id: 'user-1',
+          name: 'Luna',
+          pet_type: PetType.Cat,
+          gender: PetGender.Female,
+          breed: null,
+          birth_date: null,
+          age_years: null,
+          weight_kg: 4,
+          photo_url: null,
+          allergies: [],
+          medical_conditions: [],
+          is_active: true,
+          created_at: null,
+          updated_at: null,
+        },
+        error: null,
+      })
+      .mockResolvedValueOnce({
+        data: {
+          id: 'pet-1',
+          owner_id: 'user-1',
+          name: 'Luna',
+          pet_type: PetType.Cat,
+          gender: PetGender.Female,
+          breed: null,
+          birth_date: null,
+          age_years: null,
+          weight_kg: 4,
+          photo_url: photoUrl,
+          allergies: [],
+          medical_conditions: [],
+          is_active: true,
+          created_at: null,
+          updated_at: null,
+        },
+        error: null,
+      });
+    const updatePetSelect = jest.fn(() => ({
+      single: updatePetSingle,
+    }));
+    const eq = jest.fn(() => ({
+      select: updatePetSelect,
+    }));
+    const update = jest.fn(() => ({ eq }));
+
+    mockedSupabase.from
+      .mockReturnValueOnce({
+        update,
+      } as never)
+      .mockReturnValueOnce({
+        update,
+      } as never);
+
+    const upload = jest.fn().mockResolvedValue({
+      error: null,
+    });
+    const getPublicUrl = jest.fn(() => ({
+      data: { publicUrl: photoUrl },
+    }));
+
+    mockedStorageFrom.mockReturnValue({
+      upload,
+      getPublicUrl,
+    } as never);
+
+    const result = await updatePet(
+      'pet-1',
+      {
+        weight_kg: 4,
+      },
+      {
+        ownerId: 'user-1',
+        localPhotoUri: 'file:///tmp/luna.jpg',
+        localPhotoBase64: base64Photo,
+        localPhotoMimeType: 'image/jpeg',
+      }
+    );
+
+    expect(update).toHaveBeenNthCalledWith(1, {
+      weight_kg: 4,
+    });
+    expect(update).toHaveBeenNthCalledWith(2, {
+      photo_url: photoUrl,
+    });
+    expect(upload).toHaveBeenCalledWith(
+      'user-1/pet-1/photo.jpg',
+      expect.any(ArrayBuffer),
+      {
+        contentType: 'image/jpeg',
+        upsert: true,
+      }
+    );
+    expect(result).toEqual({
+      success: true,
+      data: {
+        id: 'pet-1',
+        owner_id: 'user-1',
+        name: 'Luna',
+        pet_type: PetType.Cat,
+        gender: PetGender.Female,
+        breed: null,
+        birth_date: null,
+        age_years: null,
+        weight_kg: 4,
+        photo_url: photoUrl,
+        allergies: [],
+        medical_conditions: [],
+        is_active: true,
+        created_at: null,
+        updated_at: null,
+      },
+    });
+  });
+
+  test('soft deletes a pet by setting is_active to false', async () => {
+    const eq = jest.fn().mockResolvedValue({
+      data: [{ id: 'pet-1', is_active: false }],
+      error: null,
+    });
+    const update = jest.fn(() => ({ eq }));
+
+    mockedSupabase.from.mockReturnValue({
+      update,
+    } as never);
+
+    const result = await deletePet('pet-1');
+
+    expect(update).toHaveBeenCalledWith({
+      is_active: false,
+    });
+    expect(eq).toHaveBeenCalledWith('id', 'pet-1');
+    expect(result).toEqual({
+      success: true,
+      data: [{ id: 'pet-1', is_active: false }],
     });
   });
 });

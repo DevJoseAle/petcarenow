@@ -113,7 +113,7 @@ export const useLoginScreen = () => {
 
       if (hasPets) {
         markHasPets();
-        router.replace('/(app)');
+        router.replace('/(app)/(tabs)');
         return;
       }
 

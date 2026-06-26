@@ -1,85 +1,140 @@
-import { ActivityIndicator, View } from 'react-native';
-import { Stack, useRouter } from 'expo-router';
 import { useEffect, useRef } from 'react';
+import {
+  ActivityIndicator,
+  StyleSheet,
+  View,
+} from 'react-native';
+import { Stack, useRouter } from 'expo-router';
 
-import { createNativeHeaderOptions } from '@/config/UI/largeTitleScreen';
 import { useAuthStore } from '@/features/auth/store/auth.store';
 import { usePetOnboardingGateStore } from '@/features/pets/store/petOnboardingGate.store';
-import { HomeRoutes } from '@/core/navigatorTypes/navigatorTypes';
-import { RouteDetails } from '@/core/navigatorTypes/navigatorTypesTitle';
+import { usePetStore } from '@/features/pets/store/pet.store';
 import { logger } from '@/core/utils/debug';
 
-export default function HomeLayout() {
+export default function AppLayout() {
   const router = useRouter();
-  const indexTitle = RouteDetails[HomeRoutes.Home].title;
-  const petOnboardingTitle = RouteDetails[HomeRoutes.PetOnboarding].title;
-  
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-  const isHydrating = useAuthStore((state) => state.isHydrating);
-  const userId = useAuthStore((state) => state.user?.id ?? null);
-  
-  const hasPets = usePetOnboardingGateStore((state) => state.hasPets);
-  const isPetGateHydrating = usePetOnboardingGateStore((state) => state.isHydrating);
-  const petGateError = usePetOnboardingGateStore((state) => state.generalError);
-  const hydratePetStatus = usePetOnboardingGateStore((state) => state.hydratePetStatus);
-
+  const isAuthenticated = useAuthStore(
+    (state) => state.isAuthenticated
+  );
+  const isHydrating = useAuthStore(
+    (state) => state.isHydrating
+  );
+  const userId = useAuthStore(
+    (state) => state.user?.id ?? null
+  );
+  const hasPets = usePetOnboardingGateStore(
+    (state) => state.hasPets
+  );
+  const isPetGateHydrating =
+    usePetOnboardingGateStore(
+      (state) => state.isHydrating
+    );
+  const petGateError =
+    usePetOnboardingGateStore(
+      (state) => state.generalError
+    );
+  const hydratePetStatus =
+    usePetOnboardingGateStore(
+      (state) => state.hydratePetStatus
+    );
+  const hydratePets = usePetStore(
+    (state) => state.hydratePets
+  );
+  const resetPets = usePetStore(
+    (state) => state.reset
+  );
   const prevUserIdRef = useRef<string | null>(null);
   const hasNavigatedRef = useRef(false);
 
-  logger.debug('HomeLayout render', {
-    isAuthenticated,
-    isHydrating,
-    userId,
-    hasPets,
-    isPetGateHydrating,
-  });
-
   useEffect(() => {
-    if (isAuthenticated && userId && userId !== prevUserIdRef.current) {
-      logger.debug('HomeLayout calling hydratePetStatus', { userId });
+    if (
+      isAuthenticated &&
+      userId &&
+      userId !== prevUserIdRef.current
+    ) {
+      logger.debug(
+        'AppLayout calling hydratePetStatus',
+        { userId }
+      );
       prevUserIdRef.current = userId;
       hasNavigatedRef.current = false;
       hydratePetStatus(userId);
+      hydratePets(userId);
     }
-  }, [isAuthenticated, userId, hydratePetStatus]);
+
+    if (!userId) {
+      prevUserIdRef.current = null;
+      resetPets();
+    }
+  }, [
+    hydratePetStatus,
+    hydratePets,
+    isAuthenticated,
+    resetPets,
+    userId,
+  ]);
 
   useEffect(() => {
-    if (isHydrating || isPetGateHydrating || !isAuthenticated) {
+    if (
+      isHydrating ||
+      isPetGateHydrating ||
+      !isAuthenticated
+    ) {
       return;
     }
 
     const needsOnboarding = petGateError || !hasPets;
 
-    logger.debug('HomeLayout navigation effect', { needsOnboarding, hasNavigatedRef: hasNavigatedRef.current });
-
-    if (needsOnboarding && !hasNavigatedRef.current) {
+    if (
+      needsOnboarding &&
+      !hasNavigatedRef.current
+    ) {
       hasNavigatedRef.current = true;
-      logger.info('HomeLayout navigating to pet-onboarding');
       router.replace('/pet-onboarding');
-    } else if (!needsOnboarding && hasNavigatedRef.current) {
+    } else if (
+      !needsOnboarding &&
+      hasNavigatedRef.current
+    ) {
       hasNavigatedRef.current = false;
     }
-  }, [isHydrating, isPetGateHydrating, isAuthenticated, petGateError, hasPets, router]);
+  }, [
+    hasPets,
+    isAuthenticated,
+    isHydrating,
+    isPetGateHydrating,
+    petGateError,
+    router,
+  ]);
 
   if (isHydrating || isPetGateHydrating) {
-    logger.debug('HomeLayout loading state', { isHydrating, isPetGateHydrating });
     return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <View style={styles.loader}>
         <ActivityIndicator size="large" />
       </View>
     );
   }
 
   return (
-    <Stack>
-      <Stack.Screen 
-        name="index" 
-        options={createNativeHeaderOptions(indexTitle)} 
-      />
-      <Stack.Screen
-        name="pet-onboarding"
-        options={createNativeHeaderOptions(petOnboardingTitle)}
-      />
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="pet-detail" />
+      <Stack.Screen name="pet-onboarding" />
+      <Stack.Screen name="care-profile" />
+      <Stack.Screen name="event-detail" />
+      <Stack.Screen name="record-detail" />
+      <Stack.Screen name="record-entry" />
+      <Stack.Screen name="event-entry" />
+      <Stack.Screen name="veterinaries" />
+      <Stack.Screen name="veterinary-profile" />
+      <Stack.Screen name="quick-actions" />
     </Stack>
   );
 }
+
+const styles = StyleSheet.create({
+  loader: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});

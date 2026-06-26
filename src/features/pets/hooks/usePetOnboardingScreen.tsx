@@ -193,7 +193,7 @@ export const usePetOnboardingScreen = () => {
           result.error.message
         );
         markHasPets();
-        router.replace('/(app)');
+        router.replace('/(app)/(tabs)');
         return;
       }
 
@@ -202,7 +202,7 @@ export const usePetOnboardingScreen = () => {
     }
 
     markHasPets();
-    router.replace('/(app)');
+    router.replace('/(app)/(tabs)');
   };
 
   const openBirthDatePicker = () => {
