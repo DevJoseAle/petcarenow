@@ -100,14 +100,30 @@
 
 ---
 
-# Next HU
+# Current Focus
 
 ## HU-Emergencia + Veterinarias
 
-* [ ] Definir especificación de emergencia y veterinarias
-* [ ] Implementar listado de veterinarias
-* [ ] Implementar detalle de veterinaria
-* [ ] Implementar guardar veterinaria favorita
+* [x] Definir especificación de emergencia y veterinarias
+* [x] Implementar listado de veterinarias
+* [x] Implementar detalle de veterinaria
+* [x] Implementar guardar veterinaria favorita
+* [x] Implementar mapa con ubicación actual
+* [x] Implementar filtros de cercanía y emergencia
+* [x] Crear acceso a veterinarias guardadas desde `Más`
+* [ ] Validar Android con Google Maps API key
+
+---
+
+# Next HU
+
+## HU-Más
+
+* [x] Definir especificación de Más
+* [x] Implementar perfil de usuario real
+* [x] Implementar veterinarias guardadas dentro de Más
+* [x] Marcar opciones futuras con label `Próximamente`
+* [x] Mantener logout robusto y probado
 
 ---
 
@@ -115,29 +131,31 @@
 
 ## Specification
 
-* [ ] Create emergency specification
+* [x] Create emergency specification
 
 ## Database
 
-* [ ] Create veterinary_clinics table
-* [ ] Seed initial clinics
+* [x] Create veterinary_clinics table
+* [x] Seed initial clinics
 
 ## UI
 
-* [ ] Emergency screen
-* [ ] Clinic card
-* [ ] Clinic detail screen
+* [x] Emergency screen
+* [x] Clinic card
+* [x] Clinic detail screen
 
 ## Features
 
-* [ ] List clinics
-* [ ] Call clinic
-* [ ] Open maps
+* [x] List clinics
+* [x] Call clinic
+* [x] Open maps
+* [x] Save favorite clinics
+* [x] Filter nearby clinics
 
 ## Tests
 
 * [ ] Emergency screen tests
-* [ ] Emergency service tests
+* [x] Emergency service tests
 
 ---
 

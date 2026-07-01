@@ -3,6 +3,7 @@ import {
   useRef,
 } from 'react';
 import {
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -11,6 +12,7 @@ import {
 import MapView, {
   Marker,
 } from 'react-native-maps';
+import Ionicons from '@react-native-vector-icons/ionicons';
 import { Screen } from '@/components/Screen';
 import { useTheme } from '@/core/theme/useTheme';
 import SectionState from '@/features/home/components/SectionState';
@@ -33,6 +35,7 @@ export default function VeterinariesScreen() {
     locationStatus,
     userLocation,
     mapRegion,
+    goBack,
     retry,
     toggleOnlyEmergency,
     toggleOnly24Hours,
@@ -89,6 +92,25 @@ export default function VeterinariesScreen() {
   return (
     <Screen scroll>
       <View style={styles.content}>
+        <Pressable
+          onPress={goBack}
+          style={styles.backButton}
+        >
+          <Ionicons
+            name="chevron-back"
+            size={18}
+            color={theme.textPrimary}
+          />
+          <Text
+            style={[
+              styles.backLabel,
+              { color: theme.textPrimary },
+            ]}
+          >
+            Volver
+          </Text>
+        </Pressable>
+
         <View style={styles.header}>
           <Text
             style={[
@@ -309,6 +331,17 @@ const styles = StyleSheet.create({
   content: {
     gap: 18,
     paddingBottom: 32,
+  },
+  backButton: {
+    alignSelf: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingVertical: 4,
+  },
+  backLabel: {
+    fontSize: 15,
+    fontWeight: '700',
   },
   header: {
     gap: 8,

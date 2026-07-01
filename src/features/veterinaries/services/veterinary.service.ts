@@ -106,6 +106,31 @@ export const listSavedVeterinaryIds = async (
   );
 };
 
+export const listSavedVeterinaries = async (
+  ownerId: string
+) => {
+  const savedIds =
+    await listSavedVeterinaryIds(ownerId);
+
+  if (savedIds.length === 0) {
+    return [] as Veterinary[];
+  }
+
+  const { data, error } = await supabase
+    .from('veterinaries')
+    .select('*')
+    .in('id', savedIds)
+    .order('name', {
+      ascending: true,
+    });
+
+  if (error) {
+    throw mapVeterinaryError(error);
+  }
+
+  return (data ?? []) as Veterinary[];
+};
+
 export const saveVeterinary = async ({
   ownerId,
   veterinaryId,

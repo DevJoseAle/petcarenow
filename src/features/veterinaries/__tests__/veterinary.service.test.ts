@@ -1,5 +1,6 @@
 import {
   getVeterinaryById,
+  listSavedVeterinaries,
   listSavedVeterinaryIds,
   listVeterinaries,
   removeSavedVeterinary,
@@ -103,6 +104,49 @@ describe('veterinary.service', () => {
     await expect(
       listSavedVeterinaryIds('user-1')
     ).resolves.toEqual(['vet-1', 'vet-2']);
+  });
+
+  test('lists saved veterinaries for the user', async () => {
+    const order = jest.fn().mockResolvedValue({
+      data: [
+        { id: 'vet-1', name: 'Clinica 1' },
+      ],
+      error: null,
+    });
+    const inFn = jest.fn(() => ({ order }));
+    const selectVeterinaries = jest.fn(() => ({
+      in: inFn,
+    }));
+
+    const ownerEq = jest.fn().mockResolvedValue({
+      data: [{ veterinary_id: 'vet-1' }],
+      error: null,
+    });
+    const selectSaved = jest.fn(() => ({
+      eq: ownerEq,
+    }));
+
+    mockedSupabase.from.mockImplementation(
+      ((table: string) => {
+        if (table === 'saved_veterinaries') {
+          return {
+            select: selectSaved,
+          };
+        }
+
+        return {
+          select: selectVeterinaries,
+        };
+      }) as never
+    );
+
+    await expect(
+      listSavedVeterinaries('user-1')
+    ).resolves.toEqual([
+      expect.objectContaining({
+        id: 'vet-1',
+      }),
+    ]);
   });
 
   test('saves a veterinary for the user', async () => {

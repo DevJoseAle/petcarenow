@@ -160,6 +160,23 @@ export const useVeterinariesScreen = () => {
     ]
   );
 
+  const listedVeterinaries = useMemo(
+    () =>
+      params.mode === 'map' &&
+      selectedVeterinaryId
+        ? visibleVeterinaries.filter(
+            (veterinary) =>
+              veterinary.id !==
+              selectedVeterinaryId
+          )
+        : visibleVeterinaries,
+    [
+      params.mode,
+      selectedVeterinaryId,
+      visibleVeterinaries,
+    ]
+  );
+
   const selectedVeterinary = useMemo(
     () =>
       visibleVeterinaries.find(
@@ -180,7 +197,7 @@ export const useVeterinariesScreen = () => {
 
   return {
     mode: params.mode === 'map' ? 'map' : 'list',
-    veterinaries: visibleVeterinaries,
+    veterinaries: listedVeterinaries,
     selectedVeterinary,
     isHydrating,
     generalError,
@@ -191,6 +208,7 @@ export const useVeterinariesScreen = () => {
     userLocation,
     mapRegion,
     fallbackRegion: SANTIAGO_REGION,
+    goBack: () => router.back(),
     retry: () => hydrate(filters),
     toggleOnlyEmergency: () => {
       const nextFilters = {

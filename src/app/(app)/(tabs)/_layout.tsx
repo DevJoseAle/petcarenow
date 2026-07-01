@@ -68,6 +68,7 @@ export default function TabsLayout() {
       >
         <NativeTabs.Trigger
           name="index"
+          labelVisibilityMode='unlabeled'
           disableAutomaticContentInsets
         >
           <NativeTabs.Trigger.Icon
@@ -77,7 +78,7 @@ export default function TabsLayout() {
             }}
             drawable="ic_menu_view"
           />
-          <NativeTabs.Trigger.Label>
+          <NativeTabs.Trigger.Label hidden>
             Inicio
           </NativeTabs.Trigger.Label>
         </NativeTabs.Trigger>
@@ -93,7 +94,7 @@ export default function TabsLayout() {
             }}
             drawable="ic_menu_myplaces"
           />
-          <NativeTabs.Trigger.Label>
+          <NativeTabs.Trigger.Label hidden>
             Mascotas
           </NativeTabs.Trigger.Label>
         </NativeTabs.Trigger>
@@ -110,7 +111,7 @@ export default function TabsLayout() {
             }}
             drawable="ic_menu_agenda"
           />
-          <NativeTabs.Trigger.Label>
+          <NativeTabs.Trigger.Label hidden>
             Registros
           </NativeTabs.Trigger.Label>
         </NativeTabs.Trigger>
@@ -126,7 +127,7 @@ export default function TabsLayout() {
             }}
             drawable="ic_menu_month_calendar"
           />
-          <NativeTabs.Trigger.Label>
+          <NativeTabs.Trigger.Label hidden>
             Calendario
           </NativeTabs.Trigger.Label>
         </NativeTabs.Trigger>
@@ -143,7 +144,7 @@ export default function TabsLayout() {
             }}
             drawable="ic_menu_manage"
           />
-          <NativeTabs.Trigger.Label>
+          <NativeTabs.Trigger.Label hidden>
             Más
           </NativeTabs.Trigger.Label>
         </NativeTabs.Trigger>

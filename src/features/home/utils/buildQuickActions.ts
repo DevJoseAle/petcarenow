@@ -1,7 +1,7 @@
 import type { HomeQuickAction } from '../hooks/useHomeScreen';
 
 interface QuickActionHandlers {
-  navigateToRecordEntry: (type?: string) => void;
+    navigateToRecordEntry: (type?: string) => void;
   navigateToEventEntry: () => void;
   navigateToAddPet: () => void;
 }
