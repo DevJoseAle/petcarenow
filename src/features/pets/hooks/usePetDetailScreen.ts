@@ -409,6 +409,7 @@ export const usePetDetailScreen = () => {
     closeBirthDatePicker,
     handleBirthDateChange,
     openPhotoOptions,
+    goBack: () => router.back(),
     handleCancel,
     handleSave,
     handleDelete,
