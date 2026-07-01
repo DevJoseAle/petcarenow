@@ -10,6 +10,8 @@ HU-Registro rápido - Cerrada
 
 HU-Próximos cuidados / Calendario - Cerrada
 
-HU-Emergencia + Veterinarias - Siguiente
+HU-Emergencia + Veterinarias - En validación
+Mapa/listado de veterinarias, ubicación actual, filtros de cercanía, perfil de veterinaria y favoritas conectadas a Supabase.
 
-HU-Más - Pendiente
+HU-Más - En validación
+Perfil de usuario real, veterinarias guardadas activas y opciones futuras marcadas como `Próximamente`.

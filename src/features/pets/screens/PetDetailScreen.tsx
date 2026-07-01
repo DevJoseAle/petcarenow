@@ -8,6 +8,7 @@ import {
   View,
 } from 'react-native';
 import DateTimePicker from '@expo/ui/community/datetime-picker';
+import Ionicons from '@react-native-vector-icons/ionicons';
 import { Screen } from '@/components/Screen';
 import PrimaryButton from '@/components/PrimaryButton';
 import { useTheme } from '@/core/theme/useTheme';
@@ -51,6 +52,7 @@ export default function PetDetailScreen() {
     closeBirthDatePicker,
     handleBirthDateChange,
     openPhotoOptions,
+    goBack,
     handleCancel,
     handleSave,
     handleDelete,
@@ -62,6 +64,25 @@ export default function PetDetailScreen() {
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
+        <Pressable
+          onPress={goBack}
+          style={styles.backButton}
+        >
+          <Ionicons
+            name="chevron-back"
+            size={18}
+            color={theme.textPrimary}
+          />
+          <Text
+            style={[
+              styles.backLabel,
+              { color: theme.textPrimary },
+            ]}
+          >
+            Volver
+          </Text>
+        </Pressable>
+
         <Text
           style={[
             styles.title,
@@ -306,6 +327,17 @@ const styles = StyleSheet.create({
   content: {
     paddingBottom: 32,
     gap: 16,
+  },
+  backButton: {
+    alignSelf: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingVertical: 4,
+  },
+  backLabel: {
+    fontSize: 15,
+    fontWeight: '700',
   },
   title: {
     fontSize: 28,
