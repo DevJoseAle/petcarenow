@@ -24,6 +24,9 @@ export default function TabsLayout() {
   const [isQuickActionsOpen, setIsQuickActionsOpen] =
     useState(false);
 
+  const iconsNames = {}
+  // const iconForPlatform = ()
+
   const quickActions = useMemo(
     () =>
       buildQuickActions({
@@ -76,7 +79,10 @@ export default function TabsLayout() {
               default: 'house',
               selected: 'house.fill',
             }}
-            drawable="ic_menu_view"
+            md={{
+              default: 'home',
+              selected: 'home_filled',
+            }}
           />
           <NativeTabs.Trigger.Label hidden>
             Inicio
@@ -92,7 +98,10 @@ export default function TabsLayout() {
               default: 'pawprint',
               selected: 'pawprint.fill',
             }}
-            drawable="ic_menu_myplaces"
+            md={{
+              default: 'pets',
+              selected: 'pets',
+            }}
           />
           <NativeTabs.Trigger.Label hidden>
             Mascotas
@@ -109,7 +118,11 @@ export default function TabsLayout() {
               selected:
                 'list.bullet.rectangle.fill',
             }}
-            drawable="ic_menu_agenda"
+            md={{
+              default: 'assignment',
+              selected: 'assignment',
+            }}
+
           />
           <NativeTabs.Trigger.Label hidden>
             Registros
@@ -125,7 +138,10 @@ export default function TabsLayout() {
               default: 'calendar',
               selected: 'calendar.circle.fill',
             }}
-            drawable="ic_menu_month_calendar"
+            md={{
+              default: 'calendar_month',
+              selected: 'calendar_month',
+            }}
           />
           <NativeTabs.Trigger.Label hidden>
             Calendario
@@ -142,7 +158,10 @@ export default function TabsLayout() {
               selected:
                 'line.3.horizontal.decrease.circle.fill',
             }}
-            drawable="ic_menu_manage"
+           md={{
+              default: 'menu',
+              selected: 'menu',
+            }}
           />
           <NativeTabs.Trigger.Label hidden>
             Más

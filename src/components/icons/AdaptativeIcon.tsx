@@ -9,7 +9,7 @@ interface IconProps {
 }
 const platform = Platform.OS
 export default function AdaptativeIcon({ name, size = 28, color = 'black', containerStyle }: IconProps) {
-    const iconName = platform === 'ios' ? `${name}-outline` : `${name}-filled`;
+    const iconName = platform === 'ios' ? `${name}-outline` : `${name}`;
     return (
         <View style={containerStyle}>
             <Ionicons name={iconName as any} size={size} color={color} />
