@@ -38,10 +38,11 @@ export default function ForgotPasswordScreen() {
             ? 'padding'
             : undefined
         }
-        keyboardVerticalOffset={20}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0}
       >
         <ScrollView 
           style={styles.container}
+          contentContainerStyle={{flexGrow: 1, paddingBottom: Platform.OS === 'android' ? 140 : 0}}
           showsVerticalScrollIndicator={false}
           bounces={false}
         >
@@ -123,7 +124,7 @@ export default function ForgotPasswordScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 20,
+    paddingTop: 30,
   },
   content: {
     paddingTop: HEADER_CONTENT_OFFSET,

@@ -23,9 +23,9 @@ export default function TabsLayout() {
   const insets = useSafeAreaInsets();
   const [isQuickActionsOpen, setIsQuickActionsOpen] =
     useState(false);
-
-  const iconsNames = {}
-  // const iconForPlatform = ()
+  const floatingButtonBottomOffset =
+    insets.bottom +
+    (Platform.OS === 'android' ? 80 : 48);
 
   const quickActions = useMemo(
     () =>
@@ -178,7 +178,7 @@ export default function TabsLayout() {
           style={[
             styles.plusButtonPressable,
             {
-              bottom: insets.bottom + 48,
+              bottom: floatingButtonBottomOffset,
               right: 20,
             },
           ]}

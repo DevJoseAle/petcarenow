@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Linking } from 'react-native';
+import { Alert, Linking } from 'react-native';
 import {
   useLocalSearchParams,
   useRouter,
@@ -97,16 +97,7 @@ export const useVeterinaryProfileScreen = () => {
     ? savedVeterinaryIds.includes(veterinary.id)
     : false;
 
-  return {
-    veterinary,
-    isHydrating,
-    generalError,
-    saveError,
-    isSaving,
-    isSaved,
-    goBack: () => router.back(),
-    retry: hydrate,
-    toggleSaved: async () => {
+  const toggleSaved = async () => {
       if (!user?.id || !veterinary || isSaving) {
         return;
       }
@@ -138,18 +129,46 @@ export const useVeterinaryProfileScreen = () => {
       } finally {
         setIsSaving(false);
       }
-    },
-    openMaps: () =>
+    }
+
+    const openMaps = () =>
       veterinary
         ? Linking.openURL(
             `https://maps.apple.com/?ll=${veterinary.latitude},${veterinary.longitude}&q=${encodeURIComponent(
               veterinary.name
             )}`
           )
-        : undefined,
-    callVeterinary: () =>
+        : undefined;
+
+      const callVeterinary = async () =>
       veterinary?.phone
-        ? Linking.openURL(`tel:${veterinary.phone}`)
-        : undefined,
+        ? await Linking.openURL(`tel:${veterinary.phone}`)
+        : undefined;
+
+  const handleCall = () => {
+    const url = `tel:${veterinary?.phone}`;
+    Linking.canOpenURL(url)
+      .then((supported) => {
+        if (supported) {
+          Linking.openURL(url);
+        } else {
+          Alert.alert('Error', 'La función de llamada no está soportada en este dispositivo');
+        }
+      })
+      .catch((err) => console.error('Error al intentar llamar:', err));
+  };
+
+  return {
+    veterinary,
+    isHydrating,
+    generalError,
+    saveError,
+    isSaving,
+    isSaved,
+    goBack: () => router.back(),
+    retry: hydrate,
+    toggleSaved: toggleSaved,
+    openMaps: openMaps ,
+    callVeterinary: handleCall
   };
 };
