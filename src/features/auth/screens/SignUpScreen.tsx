@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native'
+import { StyleSheet, View, Text } from 'react-native'
 import { Screen } from '@/components/Screen'
 import LabeledTextField from '@/components/LabeledTextField'
 import { Image } from 'expo-image'
@@ -6,6 +6,8 @@ import { useTheme } from '@/core/theme/useTheme'
 import PrimaryButton from '@/components/PrimaryButton'
 import TouchableText from '@/components/TouchableText'
 import { useSignUpScreen } from '../hooks/useSignUpScreen'
+
+const HEADER_CONTENT_OFFSET = 48
 
 export default function SignUpScreen() {
   const {
@@ -29,16 +31,23 @@ export default function SignUpScreen() {
   return (
     <Screen scroll>
 
-      <View>
-        <View style={{ marginTop: 60, justifyContent: 'center', alignItems: 'center'}}>
+      <View style={styles.content}>
+        <View style={styles.brand}>
           <Image
-          style={{ width: 100, height: 100 }}
+          style={styles.logo}
           source={require('@/assets/images/PCNLogo.png')}
         />
-        <Text style={{fontWeight: '600', fontSize: 30}}> Pet Care Now </Text>
-        <Text style={{fontWeight: 'thin', color: theme.textSecondary, fontStyle: 'italic' }} >La App para el cuidado de tu mascota</Text>
+        <Text style={styles.title}> Pet Care Now </Text>
+        <Text
+          style={[
+            styles.subtitle,
+            { color: theme.textSecondary },
+          ]}
+        >
+          La App para el cuidado de tu mascota
+        </Text>
         </View>
-      <View style={{marginTop: 20}}>
+      <View style={styles.form}>
           <LabeledTextField
           label="Correo Electrónico"
           placeholder="Tumail@email.com"
@@ -89,3 +98,29 @@ export default function SignUpScreen() {
     </Screen>
   )
 }
+
+const styles = StyleSheet.create({
+  content: {
+    paddingTop: HEADER_CONTENT_OFFSET,
+  },
+  brand: {
+    marginTop: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  logo: {
+    width: 100,
+    height: 100,
+  },
+  title: {
+    fontWeight: '600',
+    fontSize: 30,
+  },
+  subtitle: {
+    fontWeight: '100',
+    fontStyle: 'italic',
+  },
+  form: {
+    marginTop: 20,
+  },
+})

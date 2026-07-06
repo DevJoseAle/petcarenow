@@ -1,6 +1,7 @@
 import {
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -11,6 +12,8 @@ import PrimaryButton from '@/components/PrimaryButton';
 import TouchableText from '@/components/TouchableText';
 import { useTheme } from '@/core/theme/useTheme';
 import { useForgotPasswordScreen } from '../hooks/useForgotPasswordScreen';
+
+const HEADER_CONTENT_OFFSET = 48;
 
 export default function ForgotPasswordScreen() {
   const theme = useTheme();
@@ -29,83 +32,89 @@ export default function ForgotPasswordScreen() {
   return (
     <Screen>
       <KeyboardAvoidingView
-        style={styles.container}
+        style={{ flex: 1 }}
         behavior={
           Platform.OS === 'ios'
             ? 'padding'
             : undefined
         }
+        keyboardVerticalOffset={20}
       >
-        <View>
-          <Text
-            style={{
-              marginTop: 12,
-              fontSize: 16,
-              color: theme.textSecondary,
-            }}
-          >
-            Ingresa tu correo y te enviaremos
-            instrucciones para recuperar el
-            acceso.
-          </Text>
+        <ScrollView 
+          style={styles.container}
+          showsVerticalScrollIndicator={false}
+          bounces={false}
+        >
+          <View style={styles.content}>
+            <Text
+              style={[
+                styles.description,
+                { color: theme.textSecondary },
+              ]}
+            >
+              Ingresa tu correo y te enviaremos
+              instrucciones para recuperar el
+              acceso.
+            </Text>
 
-          <View style={{ marginTop: 24 }}>
-            <LabeledTextField
-              label="Correo Electrónico"
-              placeholder="Tumail@email.com"
-              leftIconName="mail"
-              value={email}
-              onChangeText={setEmail}
-              onBlur={handleEmailBlur}
-              autoCapitalize="none"
-              keyboardType="email-address"
-              autoCorrect={false}
-              secureTextEntry={false}
-              rightIconAction={() => {}}
-              editable={!isSubmitting}
-              error={emailError}
+            <View style={styles.form}>
+              <LabeledTextField
+                label="Correo Electrónico"
+                placeholder="Tumail@email.com"
+                leftIconName="mail"
+                value={email}
+                onChangeText={setEmail}
+                onBlur={handleEmailBlur}
+                autoCapitalize="none"
+                keyboardType="email-address"
+                autoCorrect={false}
+                secureTextEntry={false}
+                rightIconAction={() => { }}
+                editable={!isSubmitting}
+                error={emailError}
+              />
+            </View>
+
+            {generalError ? (
+              <Text
+                style={{
+                  marginTop: 16,
+                  fontSize: 14,
+                  color: '#DC2626',
+                }}
+              >
+                {generalError}
+              </Text>
+            ) : null}
+
+            {successMessage ? (
+              <Text
+                style={{
+                  marginTop: 16,
+                  fontSize: 14,
+                  color: '#15803D',
+                }}
+              >
+                {successMessage}
+              </Text>
+            ) : null}
+
+            <PrimaryButton
+              title={
+                isSubmitting
+                  ? 'Enviando...'
+                  : 'Enviar correo'
+              }
+              action={handleSubmit}
+              disabled={isSubmitting}
+            />
+            <TouchableText
+              title="Volver a Iniciar Sesión"
+              action={goToLogin}
+              alignment="center"
             />
           </View>
-
-          {generalError ? (
-            <Text
-              style={{
-                marginTop: 16,
-                fontSize: 14,
-                color: '#DC2626',
-              }}
-            >
-              {generalError}
-            </Text>
-          ) : null}
-
-          {successMessage ? (
-            <Text
-              style={{
-                marginTop: 16,
-                fontSize: 14,
-                color: '#15803D',
-              }}
-            >
-              {successMessage}
-            </Text>
-          ) : null}
-
-          <PrimaryButton
-            title={
-              isSubmitting
-                ? 'Enviando...'
-                : 'Enviar correo'
-            }
-            action={handleSubmit}
-            disabled={isSubmitting}
-          />
-          <TouchableText
-            title="Volver a Iniciar Sesión"
-            action={goToLogin}
-            alignment="center"
-          />
-        </View>
+        </ScrollView>
       </KeyboardAvoidingView>
     </Screen>
   );
@@ -114,6 +123,16 @@ export default function ForgotPasswordScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'space-between',
+    paddingTop: 20,
+  },
+  content: {
+    paddingTop: HEADER_CONTENT_OFFSET,
+  },
+  description: {
+    marginTop: 12,
+    fontSize: 16,
+  },
+  form: {
+    marginTop: 24,
   },
 });

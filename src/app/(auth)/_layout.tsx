@@ -51,25 +51,35 @@ export default function AuthLayout() {
   if (isAuthenticated) {
     return null;
   }
-  
+
   return (
     <Stack>
 
       <Stack.Screen
         name="login"
-        options={{headerShown: false}}
+        options={{ headerShown: false, }}
       />
       <Stack.Screen
         name="register"
-        options={createNativeHeaderOptions("Crear Cuenta")}
-      />
+        options={{
+          headerShown: true,
+          title: '',
+          headerTransparent: true,
+          headerShadowVisible: false,
+          headerBackButtonDisplayMode: 'minimal'
+        }} />
       <Stack.Screen
         name="forgot-password"
-        options={createNativeHeaderOptions("Recuperar contraseña")}
-      />
-            <Stack.Screen
+        options={{
+          headerShown: true,
+          title: '',
+          headerTransparent: true,
+          headerShadowVisible: false,
+          headerBackButtonDisplayMode: 'minimal'
+        }} />
+      <Stack.Screen
         name="onboarding"
-        options={{headerShown: false}}
+        options={{ headerShown: false }}
       />
     </Stack>
   );

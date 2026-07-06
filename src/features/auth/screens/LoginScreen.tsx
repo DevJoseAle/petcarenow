@@ -28,7 +28,11 @@ export default function LoginScreen() {
     const theme = useTheme();
     return (
         <Screen>
-            <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={20}>
+            <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+                keyboardVerticalOffset={20}
+            >
                 <ScrollView
                     style={style.container}
                     showsVerticalScrollIndicator={false}
