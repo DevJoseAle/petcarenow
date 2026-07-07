@@ -1,8 +1,18 @@
+import { Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useAuthStore } from '@/features/auth/store/auth.store';
 import { usePetOnboardingGateStore } from '@/features/pets/store/petOnboardingGate.store';
 import { usePetStore } from '@/features/pets/store/pet.store';
+
+type MoreItemStatus = 'active' | 'coming-soon';
+
+interface MoreItem {
+  id: string;
+  label: string;
+  status: MoreItemStatus;
+  onPress: () => void;
+}
 
 export const useMoreScreen = () => {
   const router = useRouter();
@@ -20,6 +30,12 @@ export const useMoreScreen = () => {
     useState(false);
   const [logoutError, setLogoutError] =
     useState('');
+  const showComingSoon = (label: string) => {
+    Alert.alert(
+      'Próximamente',
+      `${label} estará disponible en una próxima iteración.`
+    );
+  };
 
   const handleLogout = async () => {
     if (isLoggingOut) {
@@ -43,46 +59,61 @@ export const useMoreScreen = () => {
     }
   };
 
-  return {
-    isLoggingOut,
-    logoutError,
-    handleLogout,
-    items: [
+  let items: MoreItem[] = [
       {
         id: 'profile',
         label: 'Perfil de usuario',
-        onPress: () => router.push('/pets'),
-      },
-      {
-        id: 'settings',
-        label: 'Configuración',
-        onPress: () => undefined,
-      },
-      {
-        id: 'notifications',
-        label: 'Notificaciones',
-        onPress: () => undefined,
-      },
-      {
-        id: 'premium',
-        label: 'Suscripción / Premium',
-        onPress: () => undefined,
+        status: 'active',
+        onPress: () =>
+          router.push('/user-profile' as never),
       },
       {
         id: 'saved-vets',
         label: 'Veterinarias guardadas',
-        onPress: () => router.push('/veterinaries'),
+        status: 'active',
+        onPress: () =>
+          router.push(
+            '/saved-veterinaries' as never
+          ),
+      },
+      {
+        id: 'settings',
+        label: 'Configuración',
+        status: 'coming-soon',
+        onPress: () => showComingSoon('Configuración'),
+      },
+      {
+        id: 'notifications',
+        label: 'Notificaciones',
+        status: 'coming-soon',
+        onPress: () => showComingSoon('Notificaciones'),
+      },
+      {
+        id: 'premium',
+        label: 'Suscripción / Premium',
+        status: 'coming-soon',
+        onPress: () =>
+          showComingSoon('Suscripción / Premium'),
       },
       {
         id: 'help',
         label: 'Ayuda',
-        onPress: () => undefined,
+        status: 'coming-soon',
+        onPress: () => showComingSoon('Ayuda'),
       },
       {
         id: 'legal',
         label: 'Términos y privacidad',
-        onPress: () => undefined,
+        status: 'coming-soon',
+        onPress: () =>
+          showComingSoon('Términos y privacidad'),
       },
-    ],
+    ]
+  return {
+    isLoggingOut,
+    logoutError,
+    handleLogout,
+    items
+    
   };
 };

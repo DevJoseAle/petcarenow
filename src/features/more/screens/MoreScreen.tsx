@@ -50,14 +50,39 @@ export default function MoreScreen() {
               onPress={item.onPress}
               style={styles.row}
             >
-              <Text
-                style={[
-                  styles.label,
-                  { color: theme.textPrimary },
-                ]}
-              >
-                {item.label}
-              </Text>
+              <View style={styles.rowContent}>
+                <Text
+                  style={[
+                    styles.label,
+                    { color: theme.textPrimary },
+                  ]}
+                >
+                  {item.label}
+                </Text>
+                {item.status ===
+                'coming-soon' ? (
+                  <View
+                    style={[
+                      styles.badge,
+                      {
+                        backgroundColor:
+                          theme.warningBackground,
+                      },
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.badgeText,
+                        {
+                          color: theme.warning,
+                        },
+                      ]}
+                    >
+                      Próximamente
+                    </Text>
+                  </View>
+                ) : null}
+              </View>
               <Ionicons
                 name="chevron-forward"
                 size={18}
@@ -105,14 +130,29 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    gap: 12,
     paddingHorizontal: 16,
     paddingVertical: 18,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: '#E5E7EB',
   },
+  rowContent: {
+    flex: 1,
+    gap: 8,
+  },
   label: {
     fontSize: 16,
     fontWeight: '600',
+  },
+  badge: {
+    alignSelf: 'flex-start',
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
+  badgeText: {
+    fontSize: 12,
+    fontWeight: '700',
   },
   errorText: {
     color: '#DC2626',

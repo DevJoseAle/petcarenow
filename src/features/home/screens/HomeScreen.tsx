@@ -1,4 +1,5 @@
 import {
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -24,6 +25,7 @@ const SHOW_VACCINES_CARD = false;
 
 export default function HomeScreen() {
   const theme = useTheme();
+  const isAndroid = Platform.OS === 'android';
   const {
     greeting,
     currentDateLabel,
@@ -305,6 +307,11 @@ export default function HomeScreen() {
           />
         </HomeSectionCard>
       </View>
+      {
+        isAndroid && (
+          <View style={{ height: 80 }} />
+        )
+      }
     </Screen>
   );
 }

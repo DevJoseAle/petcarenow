@@ -23,6 +23,9 @@ export default function TabsLayout() {
   const insets = useSafeAreaInsets();
   const [isQuickActionsOpen, setIsQuickActionsOpen] =
     useState(false);
+  const floatingButtonBottomOffset =
+    insets.bottom +
+    (Platform.OS === 'android' ? 80 : 48);
 
   const quickActions = useMemo(
     () =>
@@ -68,6 +71,7 @@ export default function TabsLayout() {
       >
         <NativeTabs.Trigger
           name="index"
+          labelVisibilityMode='unlabeled'
           disableAutomaticContentInsets
         >
           <NativeTabs.Trigger.Icon
@@ -75,9 +79,12 @@ export default function TabsLayout() {
               default: 'house',
               selected: 'house.fill',
             }}
-            drawable="ic_menu_view"
+            md={{
+              default: 'home',
+              selected: 'home_filled',
+            }}
           />
-          <NativeTabs.Trigger.Label>
+          <NativeTabs.Trigger.Label hidden>
             Inicio
           </NativeTabs.Trigger.Label>
         </NativeTabs.Trigger>
@@ -91,9 +98,12 @@ export default function TabsLayout() {
               default: 'pawprint',
               selected: 'pawprint.fill',
             }}
-            drawable="ic_menu_myplaces"
+            md={{
+              default: 'pets',
+              selected: 'pets',
+            }}
           />
-          <NativeTabs.Trigger.Label>
+          <NativeTabs.Trigger.Label hidden>
             Mascotas
           </NativeTabs.Trigger.Label>
         </NativeTabs.Trigger>
@@ -108,9 +118,13 @@ export default function TabsLayout() {
               selected:
                 'list.bullet.rectangle.fill',
             }}
-            drawable="ic_menu_agenda"
+            md={{
+              default: 'assignment',
+              selected: 'assignment',
+            }}
+
           />
-          <NativeTabs.Trigger.Label>
+          <NativeTabs.Trigger.Label hidden>
             Registros
           </NativeTabs.Trigger.Label>
         </NativeTabs.Trigger>
@@ -124,9 +138,12 @@ export default function TabsLayout() {
               default: 'calendar',
               selected: 'calendar.circle.fill',
             }}
-            drawable="ic_menu_month_calendar"
+            md={{
+              default: 'calendar_month',
+              selected: 'calendar_month',
+            }}
           />
-          <NativeTabs.Trigger.Label>
+          <NativeTabs.Trigger.Label hidden>
             Calendario
           </NativeTabs.Trigger.Label>
         </NativeTabs.Trigger>
@@ -141,9 +158,12 @@ export default function TabsLayout() {
               selected:
                 'line.3.horizontal.decrease.circle.fill',
             }}
-            drawable="ic_menu_manage"
+           md={{
+              default: 'menu',
+              selected: 'menu',
+            }}
           />
-          <NativeTabs.Trigger.Label>
+          <NativeTabs.Trigger.Label hidden>
             Más
           </NativeTabs.Trigger.Label>
         </NativeTabs.Trigger>
@@ -158,7 +178,7 @@ export default function TabsLayout() {
           style={[
             styles.plusButtonPressable,
             {
-              bottom: insets.bottom + 48,
+              bottom: floatingButtonBottomOffset,
               right: 20,
             },
           ]}

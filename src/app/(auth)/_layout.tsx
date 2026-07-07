@@ -63,7 +63,7 @@ export default function AuthLayout() {
         name="register"
         options={{
           headerShown: true,
-          title: '',
+          title: 'Crear Cuenta',
           headerTransparent: true,
           headerShadowVisible: false,
           headerBackButtonDisplayMode: 'minimal'
@@ -72,7 +72,7 @@ export default function AuthLayout() {
         name="forgot-password"
         options={{
           headerShown: true,
-          title: '',
+          title: 'Recuperar Contraseña',
           headerTransparent: true,
           headerShadowVisible: false,
           headerBackButtonDisplayMode: 'minimal'

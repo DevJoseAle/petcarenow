@@ -11,8 +11,8 @@
 - [x] Perfil de cuidado
 - [x] Registro rápido
 - [x] Próximos cuidados / calendario
-- [ ] Emergencias y veterinarias
-- [ ] Veterinarias guardadas
+- [~] Emergencias y veterinarias
+- [~] Veterinarias guardadas
 - [x] Vacunas ocultas pero implementadas
 
 ## Backlog Activo
@@ -31,6 +31,7 @@
 - [x] Implementar contratos de `veterinaries`
 - [x] Implementar contratos de `saved_veterinaries`
 - [x] Conectar servicios reales con Supabase para `pet_records` y `care_events`
+- [x] Conectar servicios reales con Supabase para `veterinaries` y `saved_veterinaries`
 
 ### Home
 
@@ -70,26 +71,34 @@
 
 ### Emergencia y Veterinarias
 
-- [ ] Crear listado de veterinarias
-- [ ] Crear mapa/listado placeholder sin librería de mapas adicional
-- [ ] Crear pantalla de perfil de veterinaria
-- [ ] Guardar/desguardar veterinarias favoritas
+- [x] Crear listado de veterinarias
+- [x] Crear mapa de veterinarias con `react-native-maps`
+- [x] Solicitar ubicación actual con `expo-location`
+- [x] Crear pantalla de perfil de veterinaria
+- [x] Guardar/desguardar veterinarias favoritas
+- [x] Mostrar veterinaria seleccionada del mapa en una sección destacada
+- [x] Filtrar veterinarias cercanas por rango
+- [x] Crear pantalla/listado de veterinarias guardadas dentro de `Más`
+- [x] Ocultar en el listado la veterinaria ya seleccionada en el mapa
+- [ ] Validar build Android real con API key de Google Maps
+- [ ] Reemplazar seed/mock inicial por dataset curado final
 
 ### Más
 
 - [x] Crear listado de opciones
-- [ ] Activar perfil de usuario
-- [ ] Activar veterinarias guardadas
+- [x] Activar perfil de usuario
+- [x] Activar veterinarias guardadas
+- [x] Marcar opciones no implementadas con label `Próximamente`
 - [x] Mantener placeholders para settings, premium, ayuda y legal
 - [x] Mantener logout dentro de esta sección
 
 ## Siguiente HU
 
-- HU-Emergencia + Veterinarias
-- Objetivo: permitir al usuario encontrar veterinarias, consultar detalle y guardar favoritas desde un flujo de emergencia útil y accionable.
+- HU-Más
+- Objetivo: validar y pulir la HU antes de marcarla como cerrada.
 
 ## Notas
 
-- `veterinaries` y `saved_veterinaries` siguen pendientes de backend final o validación de tablas reales.
+- `veterinaries` y `saved_veterinaries` ya tienen contrato, SQL, servicios y acceso desde `Más`. Falta validar completamente el flujo Android productivo.
 - `pet_records` y `care_events` ya cuentan con contrato y servicios conectados a Supabase.
 - Vacunas se implementan usando `care_events` con `event_type = vaccine`.
