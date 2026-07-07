@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Alert, Linking } from 'react-native';
 import {
   useLocalSearchParams,
@@ -7,13 +7,48 @@ import {
 import { useAuthStore } from '@/features/auth/store/auth.store';
 import { usePetStore } from '@/features/pets/store/pet.store';
 import {
-  getVeterinaryById,
+  getVeterinaryRichProfile,
+} from '../services/veterinary-rich-profile.service';
+import {
   listSavedVeterinaryIds,
   removeSavedVeterinary,
   saveVeterinary,
 } from '../services/veterinary.service';
-import type { Veterinary } from '../types/veterinary.types';
+import type { VeterinaryRichProfile } from '../types/veterinary.types';
 import { useVeterinariesStore } from '../store/veterinaries.store';
+
+const buildSocialLinks = (
+  profile: VeterinaryRichProfile | null
+) => {
+  const veterinary = profile?.veterinary;
+
+  if (!veterinary) {
+    return [];
+  }
+
+  return [
+    {
+      id: 'website',
+      label: 'Sitio web',
+      url: veterinary.website_url,
+    },
+    {
+      id: 'instagram',
+      label: 'Instagram',
+      url: veterinary.instagram_url,
+    },
+    {
+      id: 'facebook',
+      label: 'Facebook',
+      url: veterinary.facebook_url,
+    },
+    {
+      id: 'tiktok',
+      label: 'TikTok',
+      url: veterinary.tiktok_url,
+    },
+  ].filter((item) => Boolean(item.url));
+};
 
 export const useVeterinaryProfileScreen = () => {
   const router = useRouter();
@@ -24,8 +59,8 @@ export const useVeterinaryProfileScreen = () => {
   const activePetId = usePetStore(
     (state) => state.activePetId
   );
-  const [veterinary, setVeterinary] =
-    useState<Veterinary | null>(null);
+  const [profile, setProfile] =
+    useState<VeterinaryRichProfile | null>(null);
   const [isHydrating, setIsHydrating] =
     useState(false);
   const [generalError, setGeneralError] =
@@ -63,7 +98,7 @@ export const useVeterinaryProfileScreen = () => {
 
     try {
       const [data, savedIds] = await Promise.all([
-        getVeterinaryById(params.id),
+        getVeterinaryRichProfile(params.id),
         user?.id
           ? listSavedVeterinaryIds(user.id)
           : Promise.resolve([]),
@@ -76,7 +111,7 @@ export const useVeterinaryProfileScreen = () => {
         return;
       }
 
-      setVeterinary(data);
+      setProfile(data);
       setSavedVeterinaryIds(savedIds);
     } catch (error) {
       setGeneralError(
@@ -90,85 +125,149 @@ export const useVeterinaryProfileScreen = () => {
   };
 
   useEffect(() => {
-    hydrate();
+    void hydrate();
   }, [params.id, user?.id]);
 
+  const veterinary = profile?.veterinary ?? null;
   const isSaved = veterinary
     ? savedVeterinaryIds.includes(veterinary.id)
     : false;
 
-  const toggleSaved = async () => {
-      if (!user?.id || !veterinary || isSaving) {
-        return;
-      }
-
-      setIsSaving(true);
-      setSaveError('');
-
-      try {
-        if (isSaved) {
-          await removeSavedVeterinary({
-            ownerId: user.id,
-            veterinaryId: veterinary.id,
-          });
-          unmarkSavedVeterinary(veterinary.id);
-        } else {
-          await saveVeterinary({
-            ownerId: user.id,
-            veterinaryId: veterinary.id,
-            petId: activePetId,
-          });
-          markSavedVeterinary(veterinary.id);
-        }
-      } catch (error) {
-        setSaveError(
-          error instanceof Error
-            ? error.message
-            : 'No pudimos actualizar la veterinaria guardada.'
-        );
-      } finally {
-        setIsSaving(false);
-      }
+  const servicesByCategory = useMemo(() => {
+    if (!profile) {
+      return [];
     }
 
-    const openMaps = () =>
-      veterinary
-        ? Linking.openURL(
-            `https://maps.apple.com/?ll=${veterinary.latitude},${veterinary.longitude}&q=${encodeURIComponent(
-              veterinary.name
-            )}`
-          )
-        : undefined;
+    return profile.serviceCategories
+      .map((category) => ({
+        category,
+        services: profile.services.filter(
+          (service) =>
+            service.category_code ===
+            category.code
+        ),
+      }))
+      .filter((item) => item.services.length > 0);
+  }, [profile]);
 
-      const callVeterinary = async () =>
-      veterinary?.phone
-        ? await Linking.openURL(`tel:${veterinary.phone}`)
-        : undefined;
+  const socialLinks = useMemo(
+    () => buildSocialLinks(profile),
+    [profile]
+  );
 
-  const handleCall = () => {
-    const url = `tel:${veterinary?.phone}`;
-    Linking.canOpenURL(url)
-      .then((supported) => {
-        if (supported) {
-          Linking.openURL(url);
-        } else {
-          Alert.alert('Error', 'La función de llamada no está soportada en este dispositivo');
-        }
-      })
-      .catch((err) => console.error('Error al intentar llamar:', err));
+  const toggleSaved = async () => {
+    if (!user?.id || !veterinary || isSaving) {
+      return;
+    }
+
+    setIsSaving(true);
+    setSaveError('');
+
+    try {
+      if (isSaved) {
+        await removeSavedVeterinary({
+          ownerId: user.id,
+          veterinaryId: veterinary.id,
+        });
+        unmarkSavedVeterinary(veterinary.id);
+      } else {
+        await saveVeterinary({
+          ownerId: user.id,
+          veterinaryId: veterinary.id,
+          petId: activePetId,
+        });
+        markSavedVeterinary(veterinary.id);
+      }
+    } catch (error) {
+      setSaveError(
+        error instanceof Error
+          ? error.message
+          : 'No pudimos actualizar la veterinaria guardada.'
+      );
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const openMaps = () =>
+    veterinary
+      ? Linking.openURL(
+          `https://maps.apple.com/?ll=${veterinary.latitude},${veterinary.longitude}&q=${encodeURIComponent(
+            veterinary.name
+          )}`
+        )
+      : undefined;
+
+  const callVeterinary = async () => {
+    if (!veterinary?.phone) {
+      return;
+    }
+
+    const url = `tel:${veterinary.phone}`;
+    const supported =
+      await Linking.canOpenURL(url);
+
+    if (!supported) {
+      Alert.alert(
+        'Error',
+        'La función de llamada no está soportada en este dispositivo'
+      );
+      return;
+    }
+
+    await Linking.openURL(url);
+  };
+
+  const openWhatsApp = async () => {
+    if (!veterinary?.whatsapp_phone) {
+      return;
+    }
+
+    const normalizedPhone =
+      veterinary.whatsapp_phone.replace(
+        /[^+\d]/g,
+        ''
+      );
+    const url = `https://wa.me/${normalizedPhone.replace(
+      '+',
+      ''
+    )}`;
+    await Linking.openURL(url);
+  };
+
+  const sendEmail = async () => {
+    if (!veterinary?.email) {
+      return;
+    }
+
+    await Linking.openURL(
+      `mailto:${veterinary.email}`
+    );
+  };
+
+  const openExternalLink = async (
+    url: string
+  ) => {
+    await Linking.openURL(url);
   };
 
   return {
+    profile,
     veterinary,
     isHydrating,
     generalError,
     saveError,
     isSaving,
     isSaved,
+    servicesByCategory,
+    socialLinks,
     goBack: () => router.back(),
     retry: hydrate,
-    toggleSaved: toggleSaved,
-    openMaps: openMaps ,
-    callVeterinary: handleCall
+    toggleSaved,
+    openMaps,
+    callVeterinary,
+    openWhatsApp,
+    sendEmail,
+    openExternalLink,
   };
 };

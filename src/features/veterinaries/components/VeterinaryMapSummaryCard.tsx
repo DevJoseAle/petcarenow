@@ -31,9 +31,14 @@ export default function VeterinaryMapSummaryCard({
         },
       ]}
     >
-      {veterinary.photo_url ? (
+      {veterinary.logo_url || veterinary.photo_url ? (
         <Image
-          source={{ uri: veterinary.photo_url }}
+          source={{
+            uri:
+              veterinary.logo_url ??
+              veterinary.photo_url ??
+              undefined,
+          }}
           style={styles.image}
           contentFit="cover"
         />
@@ -95,6 +100,19 @@ export default function VeterinaryMapSummaryCard({
               ]}
             >
               Urgencias
+            </Text>
+          ) : null}
+          {veterinary.offers_home_visit ? (
+            <Text
+              style={[
+                styles.metaText,
+                {
+                  color:
+                    theme.primaryPressed,
+                },
+              ]}
+            >
+              Domicilio
             </Text>
           ) : null}
           <Text

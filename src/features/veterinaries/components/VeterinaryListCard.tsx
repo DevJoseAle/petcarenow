@@ -38,9 +38,14 @@ export default function VeterinaryListCard({
         },
       ]}
     >
-      {veterinary.photo_url ? (
+      {veterinary.logo_url || veterinary.photo_url ? (
         <Image
-          source={{ uri: veterinary.photo_url }}
+          source={{
+            uri:
+              veterinary.logo_url ??
+              veterinary.photo_url ??
+              undefined,
+          }}
           style={styles.image}
           contentFit="cover"
         />
@@ -134,6 +139,25 @@ export default function VeterinaryListCard({
                 ]}
               >
                 Emergencia
+              </Text>
+            </View>
+          ) : null}
+          {veterinary.offers_home_visit ? (
+            <View
+              style={[
+                styles.tag,
+                {
+                  backgroundColor: '#EEF9F2',
+                },
+              ]}
+            >
+              <Text
+                style={[
+                  styles.tagLabel,
+                  { color: theme.primaryPressed },
+                ]}
+              >
+                Domicilio
               </Text>
             </View>
           ) : null}

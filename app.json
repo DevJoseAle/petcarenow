@@ -8,10 +8,14 @@
     "scheme": "petcarenow",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/images/PCNLogo.png"
+      "icon": "./assets/images/PCNLogo.png",
+      "bundleIdentifier": "com.devjoseale.petcarenow",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
-      "package": "com.petcarenow.app",
+      "package": "com.devjoseale.petcarenow",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/PCNLogo.png",
@@ -19,7 +23,7 @@
         "monochromeImage": "./assets/images/PCNLogo.png"
       },
       "predictiveBackGestureEnabled": false,
-      "softwareKeyboardLayoutMode":"resize",
+      "softwareKeyboardLayoutMode": "resize",
       "permissions": [
         "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.ACCESS_FINE_LOCATION"
