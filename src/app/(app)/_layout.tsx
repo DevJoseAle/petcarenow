@@ -127,6 +127,7 @@ export default function AppLayout() {
       <Stack.Screen name="veterinaries" />
       <Stack.Screen name="saved-veterinaries" />
       <Stack.Screen name="user-profile" />
+      <Stack.Screen name="settings" />
       <Stack.Screen name="veterinary-profile" />
       <Stack.Screen name="quick-actions" />
     </Stack>
