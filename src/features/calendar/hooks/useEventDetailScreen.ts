@@ -9,6 +9,7 @@ import {
   deleteCareEvent,
   getCareEventById,
 } from '../services/care-event.service';
+import { syncNotificationsForOwner } from '@/features/notifications/services/notifications.service';
 import type { CareEvent } from '../types/care-event.types';
 
 const formatDateTime = (value: string) => {
@@ -108,6 +109,9 @@ export const useEventDetailScreen = () => {
 
             try {
               await deleteCareEvent(userId, event.id);
+              await syncNotificationsForOwner(
+                userId
+              ).catch(() => null);
               router.back();
             } catch (error) {
               setGeneralError(

@@ -15,3 +15,20 @@ jest.mock('expo-image-picker', () => ({
 }));
 
 jest.mock('@expo/ui/community/datetime-picker', () => 'DateTimePicker');
+
+jest.mock('expo-notifications', () => ({
+  setNotificationHandler: jest.fn(),
+  getPermissionsAsync: jest.fn(),
+  requestPermissionsAsync: jest.fn(),
+  getExpoPushTokenAsync: jest.fn(),
+  setNotificationChannelAsync: jest.fn(),
+  scheduleNotificationAsync: jest.fn(),
+  cancelScheduledNotificationAsync: jest.fn(),
+  AndroidImportance: {
+    HIGH: 'high',
+  },
+  SchedulableTriggerInputTypes: {
+    DATE: 'date',
+    TIME_INTERVAL: 'timeInterval',
+  },
+}));

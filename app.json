@@ -8,6 +8,7 @@
     "scheme": "petcarenow",
     "userInterfaceStyle": "automatic",
     "ios": {
+      
       "icon": "./assets/images/PCNLogo.png",
       "bundleIdentifier": "com.devjoseale.petcarenow",
       "infoPlist": {
@@ -59,6 +60,7 @@
           "locationWhenInUsePermission": "PetCareNow necesita tu ubicación para mostrar veterinarias cercanas en emergencias."
         }
       ],
+      "expo-notifications",
       "@react-native-vector-icons/ionicons",
       "expo-secure-store"
     ],

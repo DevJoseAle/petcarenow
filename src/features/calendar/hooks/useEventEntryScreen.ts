@@ -11,6 +11,7 @@ import {
   getCareEventById,
   updateCareEvent,
 } from '../services/care-event.service';
+import { syncNotificationsForOwner } from '@/features/notifications/services/notifications.service';
 import type { CareEventType } from '../types/care-event.types';
 import {
   formatHourInput,
@@ -145,6 +146,7 @@ export const useEventEntryScreen = () => {
     const startsAt = new Date(
       `${date}T${time}:00`
     ).toISOString();
+    const reminderAt = startsAt;
 
     if (isEditMode && params.eventId) {
       await updateCareEvent(userId, params.eventId, {
@@ -152,6 +154,7 @@ export const useEventEntryScreen = () => {
         title: title.trim(),
         description: description.trim() || null,
         starts_at: startsAt,
+        reminder_at: reminderAt,
       });
     } else {
       await createCareEvent({
@@ -161,8 +164,13 @@ export const useEventEntryScreen = () => {
         title: title.trim(),
         description: description.trim() || null,
         starts_at: startsAt,
+        reminder_at: reminderAt,
       });
     }
+
+    await syncNotificationsForOwner(userId).catch(
+      () => null
+    );
 
     setIsSubmitting(false);
     router.back();

@@ -52,7 +52,8 @@ Pantalla real de configuración con preferencias base, acceso a perfil y acceso 
 
 Pendiente completar:
 
-- Notificaciones
+- Notificaciones Core
+- Notifications Center
 - Suscripción / Premium
 - Ayuda
 - Términos y privacidad
