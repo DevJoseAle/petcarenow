@@ -31,6 +31,12 @@ jest.mock('../hooks/useMoreScreen', () => ({
         status: 'coming-soon',
         onPress: jest.fn(),
       },
+      {
+        id: 'premium',
+        label: 'Suscripción / Premium',
+        status: 'active',
+        onPress: jest.fn(),
+      },
     ],
   }),
 }));
@@ -47,6 +53,9 @@ describe('MoreScreen', () => {
     ).toBeTruthy();
     expect(
       screen.getByText('Configuración')
+    ).toBeTruthy();
+    expect(
+      screen.getByText('Suscripción / Premium')
     ).toBeTruthy();
     expect(
       screen.getByText('Próximamente')

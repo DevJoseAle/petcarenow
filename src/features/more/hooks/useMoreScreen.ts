@@ -93,9 +93,9 @@ export const useMoreScreen = () => {
       {
         id: 'premium',
         label: 'Suscripción / Premium',
-        status: 'coming-soon',
+        status: 'active',
         onPress: () =>
-          showComingSoon('Suscripción / Premium'),
+          router.push('/subscription' as never),
       },
       {
         id: 'help',
