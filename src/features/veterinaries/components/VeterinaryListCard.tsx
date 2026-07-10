@@ -5,7 +5,7 @@ import {
   View,
 } from 'react-native';
 import { Image } from 'expo-image';
-import Ionicons from '@react-native-vector-icons/ionicons';
+import Ionicons from '@/components/icons/Ionicons';
 import { useTheme } from '@/core/theme/useTheme';
 import type { VeterinaryWithDistance } from '../types/veterinary.types';
 

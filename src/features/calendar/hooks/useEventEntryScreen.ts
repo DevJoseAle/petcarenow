@@ -11,8 +11,12 @@ import {
   getCareEventById,
   updateCareEvent,
 } from '../services/care-event.service';
+import { syncNotificationsForOwner } from '@/features/notifications/services/notifications.service';
 import type { CareEventType } from '../types/care-event.types';
 import {
+  buildIsoDateTime,
+  formatLocalDateInput,
+  formatLocalTimeInput,
   formatHourInput,
   isValidHourInput,
 } from '@/core/utils/dateTimeInput';
@@ -68,12 +72,16 @@ export const useEventEntryScreen = () => {
         setEventType(event.event_type);
         setTitle(event.title);
         setDescription(event.description ?? '');
-        setDate(event.starts_at.split('T')[0] ?? '');
+        setDate(
+          formatLocalDateInput(
+            new Date(event.starts_at)
+          )
+        );
         setTime(
           event.starts_at
-            ? new Date(event.starts_at)
-                .toISOString()
-                .slice(11, 16)
+            ? formatLocalTimeInput(
+                new Date(event.starts_at)
+              )
             : ''
         );
       } catch (error) {
@@ -104,7 +112,7 @@ export const useEventEntryScreen = () => {
       return;
     }
 
-    setDate(nextDate.toISOString().split('T')[0]);
+    setDate(formatLocalDateInput(nextDate));
     setGeneralError('');
 
     if (Platform.OS === 'android') {
@@ -142,9 +150,8 @@ export const useEventEntryScreen = () => {
     setIsSubmitting(true);
     setGeneralError('');
 
-    const startsAt = new Date(
-      `${date}T${time}:00`
-    ).toISOString();
+    const startsAt = buildIsoDateTime(date, time);
+    const reminderAt = startsAt;
 
     if (isEditMode && params.eventId) {
       await updateCareEvent(userId, params.eventId, {
@@ -152,6 +159,7 @@ export const useEventEntryScreen = () => {
         title: title.trim(),
         description: description.trim() || null,
         starts_at: startsAt,
+        reminder_at: reminderAt,
       });
     } else {
       await createCareEvent({
@@ -161,8 +169,13 @@ export const useEventEntryScreen = () => {
         title: title.trim(),
         description: description.trim() || null,
         starts_at: startsAt,
+        reminder_at: reminderAt,
       });
     }
+
+    await syncNotificationsForOwner(userId).catch(
+      () => null
+    );
 
     setIsSubmitting(false);
     router.back();

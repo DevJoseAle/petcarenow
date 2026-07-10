@@ -12,7 +12,7 @@ import {
   View,
 } from 'react-native';
 import { Image } from 'expo-image';
-import Ionicons from '@react-native-vector-icons/ionicons';
+import Ionicons from '@/components/icons/Ionicons';
 import { Screen } from '@/components/Screen';
 import { useTheme } from '@/core/theme/useTheme';
 import SectionState from '@/features/home/components/SectionState';

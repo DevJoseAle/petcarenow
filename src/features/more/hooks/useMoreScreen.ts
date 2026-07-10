@@ -86,8 +86,9 @@ export const useMoreScreen = () => {
       {
         id: 'notifications',
         label: 'Notificaciones',
-        status: 'coming-soon',
-        onPress: () => showComingSoon('Notificaciones'),
+        status: 'active',
+        onPress: () =>
+          router.push('/notifications' as never),
       },
       {
         id: 'premium',

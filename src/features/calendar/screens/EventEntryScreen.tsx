@@ -8,9 +8,10 @@ import {
   View,
 } from 'react-native';
 import DateTimePicker from '@expo/ui/community/datetime-picker';
-import Ionicons from '@react-native-vector-icons/ionicons';
+import Ionicons from '@/components/icons/Ionicons';
 import { Screen } from '@/components/Screen';
 import PrimaryButton from '@/components/PrimaryButton';
+import { parseDateInput } from '@/core/utils/dateTimeInput';
 import { useTheme } from '@/core/theme/useTheme';
 import PetChoiceChip from '@/features/pets/components/PetChoiceChip';
 import { useEventEntryScreen } from '../hooks/useEventEntryScreen';
@@ -145,7 +146,11 @@ export default function EventEntryScreen() {
         {isDatePickerVisible ? (
           <View style={styles.datePickerWrapper}>
             <DateTimePicker
-              value={date ? new Date(date) : new Date()}
+              value={
+                date
+                  ? parseDateInput(date)
+                  : new Date()
+              }
               mode="date"
               display={
                 Platform.OS === 'ios'
