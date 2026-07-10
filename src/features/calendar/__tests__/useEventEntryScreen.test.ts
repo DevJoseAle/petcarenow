@@ -104,4 +104,39 @@ describe('useEventEntryScreen', () => {
       payload.starts_at
     );
   });
+
+  test('keeps the selected local date without shifting the day', () => {
+    const { result } = renderHook(() =>
+      useEventEntryScreen()
+    );
+
+    act(() => {
+      result.current.handleDateChange(
+        new Date(2026, 6, 10, 12, 0, 0)
+      );
+    });
+
+    expect(result.current.date).toBe('2026-07-10');
+    expect(
+      result.current.formattedDateLabel
+    ).toBe('2026-07-10');
+  });
+
+  test('prevents invalid hour input from being stored', () => {
+    const { result } = renderHook(() =>
+      useEventEntryScreen()
+    );
+
+    act(() => {
+      result.current.handleTimeChange('3333');
+    });
+
+    expect(result.current.time).toBe('');
+
+    act(() => {
+      result.current.handleTimeChange('2359');
+    });
+
+    expect(result.current.time).toBe('23:59');
+  });
 });

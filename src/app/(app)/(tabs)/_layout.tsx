@@ -4,7 +4,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import Ionicons from '@react-native-vector-icons/ionicons';
+import Ionicons from '@/components/icons/Ionicons';
 import { useMemo, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';

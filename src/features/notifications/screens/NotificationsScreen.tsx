@@ -5,7 +5,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import Ionicons from '@react-native-vector-icons/ionicons';
+import Ionicons from '@/components/icons/Ionicons';
 import { Screen } from '@/components/Screen';
 import { useTheme } from '@/core/theme/useTheme';
 import SectionState from '@/features/home/components/SectionState';
@@ -196,8 +196,8 @@ export default function NotificationsScreen() {
                 ]}
               >
                 {device
-                  ? `Token activo: ${device.expo_push_token.slice(0, 18)}...`
-                  : 'Aún no hay un token push registrado para este dispositivo.'}
+                  ? 'Este dispositivo quedó registrado para recibir notificaciones.'
+                  : 'Aún no hay un registro activo para este dispositivo.'}
               </Text>
               <Text
                 style={[
@@ -208,6 +208,16 @@ export default function NotificationsScreen() {
                 {device?.device_name
                   ? `Dispositivo: ${device.device_name}`
                   : 'Nombre del dispositivo no disponible.'}
+              </Text>
+              <Text
+                style={[
+                  styles.helperText,
+                  { color: theme.textSecondary },
+                ]}
+              >
+                {device?.platform
+                  ? `Plataforma: ${device.platform.toUpperCase()}`
+                  : 'Plataforma no disponible.'}
               </Text>
 
               <InlineAction
@@ -518,6 +528,7 @@ const styles = StyleSheet.create({
   inlineActionText: {
     fontSize: 14,
     fontWeight: '700',
+    textAlign: 'center',
   },
   settingRow: {
     borderBottomWidth: 1,

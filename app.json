@@ -61,7 +61,6 @@
         }
       ],
       "expo-notifications",
-      "@react-native-vector-icons/ionicons",
       "expo-secure-store"
     ],
     "experiments": {

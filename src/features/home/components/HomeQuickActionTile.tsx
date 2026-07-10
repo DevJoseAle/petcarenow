@@ -6,7 +6,7 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import Ionicons from '@react-native-vector-icons/ionicons';
+import Ionicons from '@/components/icons/Ionicons';
 import type { ComponentProps } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 

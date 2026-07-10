@@ -6,7 +6,7 @@ import {
   View,
 } from 'react-native';
 import { Image } from 'expo-image';
-import Ionicons from '@react-native-vector-icons/ionicons';
+import Ionicons from '@/components/icons/Ionicons';
 import { Screen } from '@/components/Screen';
 import PrimaryButton from '@/components/PrimaryButton';
 import { useTheme } from '@/core/theme/useTheme';

@@ -7,7 +7,7 @@ import {
   View,
 } from 'react-native';
 import DateTimePicker from '@expo/ui/community/datetime-picker';
-import Ionicons from '@react-native-vector-icons/ionicons';
+import Ionicons from '@/components/icons/Ionicons';
 import { Screen } from '@/components/Screen';
 import LabeledTextField from '@/components/LabeledTextField';
 import PrimaryButton from '@/components/PrimaryButton';
