@@ -79,8 +79,9 @@ export const useMoreScreen = () => {
       {
         id: 'settings',
         label: 'Configuración',
-        status: 'coming-soon',
-        onPress: () => showComingSoon('Configuración'),
+        status: 'active',
+        onPress: () =>
+          router.push('/settings' as never),
       },
       {
         id: 'notifications',
