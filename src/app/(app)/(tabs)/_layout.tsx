@@ -6,12 +6,7 @@ import {
 } from 'react-native';
 import Ionicons from '@/components/icons/Ionicons';
 import { useMemo, useState } from 'react';
-import { useRouter } from 'expo-router';
-import { NativeTabs } from 'expo-router/unstable-native-tabs';
-import {
-  GlassView,
-  isGlassEffectAPIAvailable,
-} from 'expo-glass-effect';
+import { Tabs, useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -50,124 +45,91 @@ export default function TabsLayout() {
     [router]
   );
 
-  const canUseGlassButton =
-    Platform.OS === 'ios' &&
-    isGlassEffectAPIAvailable();
-
   return (
     <>
-      <NativeTabs
-        backgroundColor="#FFFFFF"
-        tintColor="#6D4DFF"
-        iconColor={{
-          default: '#A3A3A3',
-          selected: '#6D4DFF',
+      <Tabs
+        screenOptions={{
+          headerShown: false,
+          tabBarActiveTintColor: '#6D4DFF',
+          tabBarInactiveTintColor: '#A3A3A3',
+          tabBarLabelStyle: styles.tabLabel,
+          tabBarStyle: styles.tabBar,
         }}
-        labelStyle={{
-          default: styles.tabLabel,
-          selected: styles.tabLabelSelected,
-        }}
-        minimizeBehavior="onScrollDown"
       >
-        <NativeTabs.Trigger
+        <Tabs.Screen
           name="index"
-          labelVisibilityMode='unlabeled'
-          disableAutomaticContentInsets
-        >
-          <NativeTabs.Trigger.Icon
-            sf={{
-              default: 'house',
-              selected: 'house.fill',
-            }}
-            md={{
-              default: 'home',
-              selected: 'home_filled',
-            }}
-          />
-          <NativeTabs.Trigger.Label hidden>
-            Inicio
-          </NativeTabs.Trigger.Label>
-        </NativeTabs.Trigger>
-
-        <NativeTabs.Trigger
+          options={{
+            title: 'Inicio',
+            tabBarIcon: ({ color, size, focused }) => (
+              <Ionicons
+                name={focused ? 'home' : 'home-outline'}
+                size={size}
+                color={color}
+              />
+            ),
+          }}
+        />
+        <Tabs.Screen
           name="pets"
-          disableAutomaticContentInsets
-        >
-          <NativeTabs.Trigger.Icon
-            sf={{
-              default: 'pawprint',
-              selected: 'pawprint.fill',
-            }}
-            md={{
-              default: 'pets',
-              selected: 'pets',
-            }}
-          />
-          <NativeTabs.Trigger.Label hidden>
-            Mascotas
-          </NativeTabs.Trigger.Label>
-        </NativeTabs.Trigger>
-
-        <NativeTabs.Trigger
+          options={{
+            title: 'Mascotas',
+            tabBarIcon: ({ color, size, focused }) => (
+              <Ionicons
+                name={focused ? 'paw' : 'paw-outline'}
+                size={size}
+                color={color}
+              />
+            ),
+          }}
+        />
+        <Tabs.Screen
           name="records"
-          disableAutomaticContentInsets
-        >
-          <NativeTabs.Trigger.Icon
-            sf={{
-              default: 'list.bullet.rectangle',
-              selected:
-                'list.bullet.rectangle.fill',
-            }}
-            md={{
-              default: 'assignment',
-              selected: 'assignment',
-            }}
-
-          />
-          <NativeTabs.Trigger.Label hidden>
-            Registros
-          </NativeTabs.Trigger.Label>
-        </NativeTabs.Trigger>
-
-        <NativeTabs.Trigger
+          options={{
+            title: 'Registros',
+            tabBarIcon: ({ color, size, focused }) => (
+              <Ionicons
+                name={
+                  focused
+                    ? 'clipboard'
+                    : 'clipboard-outline'
+                }
+                size={size}
+                color={color}
+              />
+            ),
+          }}
+        />
+        <Tabs.Screen
           name="calendar"
-          disableAutomaticContentInsets
-        >
-          <NativeTabs.Trigger.Icon
-            sf={{
-              default: 'calendar',
-              selected: 'calendar.circle.fill',
-            }}
-            md={{
-              default: 'calendar_month',
-              selected: 'calendar_month',
-            }}
-          />
-          <NativeTabs.Trigger.Label hidden>
-            Calendario
-          </NativeTabs.Trigger.Label>
-        </NativeTabs.Trigger>
-
-        <NativeTabs.Trigger
+          options={{
+            title: 'Calendario',
+            tabBarIcon: ({ color, size, focused }) => (
+              <Ionicons
+                name={
+                  focused
+                    ? 'calendar'
+                    : 'calendar-outline'
+                }
+                size={size}
+                color={color}
+              />
+            ),
+          }}
+        />
+        <Tabs.Screen
           name="more"
-          disableAutomaticContentInsets
-        >
-          <NativeTabs.Trigger.Icon
-            sf={{
-              default: 'line.3.horizontal',
-              selected:
-                'line.3.horizontal.decrease.circle.fill',
-            }}
-           md={{
-              default: 'menu',
-              selected: 'menu',
-            }}
-          />
-          <NativeTabs.Trigger.Label hidden>
-            Más
-          </NativeTabs.Trigger.Label>
-        </NativeTabs.Trigger>
-      </NativeTabs>
+          options={{
+            title: 'Más',
+            tabBarIcon: ({ color, size, focused }) => (
+              <Ionicons
+                name={focused ? 'menu' : 'menu-outline'}
+                size={size}
+                color={color}
+              />
+            ),
+          }}
+        />
+      </Tabs>
 
       <View
         pointerEvents="box-none"
@@ -183,33 +145,18 @@ export default function TabsLayout() {
             },
           ]}
         >
-          {canUseGlassButton ? (
-            <GlassView
-              glassEffectStyle="regular"
-              tintColor="rgba(109, 77, 255, 0.18)"
-              isInteractive
-              style={styles.plusButtonGlass}
-            >
-              <Ionicons
-                name="add"
-                size={32}
-                color="#6D4DFF"
-              />
-            </GlassView>
-          ) : (
-            <LinearGradient
-              colors={['#7C63FF', '#6D4DFF']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.plusButtonFallback}
-            >
-              <Ionicons
-                name="add"
-                size={32}
-                color="#FFFFFF"
-              />
-            </LinearGradient>
-          )}
+          <LinearGradient
+            colors={['#7C63FF', '#6D4DFF']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.plusButtonFallback}
+          >
+            <Ionicons
+              name="add"
+              size={32}
+              color="#FFFFFF"
+            />
+          </LinearGradient>
         </Pressable>
       </View>
 
@@ -228,9 +175,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
   },
-  tabLabelSelected: {
-    fontSize: 12,
-    fontWeight: '700',
+  tabBar: {
+    backgroundColor: '#FFFFFF',
+    borderTopColor: '#E5E7EB',
+    height: Platform.OS === 'ios' ? 88 : 64,
+    paddingBottom: Platform.OS === 'ios' ? 20 : 8,
+    paddingTop: 8,
   },
   floatingButtonLayer: {
     ...StyleSheet.absoluteFill,
@@ -238,13 +188,6 @@ const styles = StyleSheet.create({
   },
   plusButtonPressable: {
     position: 'absolute',
-  },
-  plusButtonGlass: {
-    width: 66,
-    height: 66,
-    borderRadius: 33,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   plusButtonFallback: {
     width: 66,
