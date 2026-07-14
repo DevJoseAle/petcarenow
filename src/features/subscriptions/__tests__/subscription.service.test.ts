@@ -12,6 +12,8 @@ jest.mock('react-native-purchases', () => ({
     configure: jest.fn(),
     getAppUserID: jest.fn(),
     logIn: jest.fn(),
+    syncPurchases: jest.fn(),
+    invalidateCustomerInfoCache: jest.fn(),
     getCustomerInfo: jest.fn(),
     getOfferings: jest.fn(),
     purchasePackage: jest.fn(),
@@ -29,6 +31,8 @@ import {
   getSubscriptionSnapshot,
   purchaseSubscriptionPackage,
   restoreSubscriptionPurchases,
+  sanitizeSubscriptionActionError,
+  sanitizeSubscriptionLoadError,
 } from '../services/subscription.service';
 
 const mockedPurchases =
@@ -66,8 +70,12 @@ describe('subscription.service', () => {
     mockedPurchases.isConfigured.mockResolvedValue(
       false
     );
+    mockedPurchases.getAppUserID.mockResolvedValue(
+      'user-1'
+    );
     mockedPurchases.getCustomerInfo.mockResolvedValue(
       {
+        originalAppUserId: 'user-1',
         entitlements: {
           active: {},
         },
@@ -81,6 +89,7 @@ describe('subscription.service', () => {
       await getSubscriptionSnapshot('user-1');
 
     expect(result.environment).toBe('preview');
+    expect(result.storeMode).toBe('app_store');
     expect(result.access).toBe('free');
     expect(mockedPurchases.configure).toHaveBeenCalled();
   });
@@ -115,5 +124,42 @@ describe('subscription.service', () => {
       );
 
     expect(result.kind).toBe('preview');
+  });
+
+  test('sanitizes provider load errors', () => {
+    const result =
+      sanitizeSubscriptionLoadError(
+        new Error(
+          '[RevenueCat] Native module (RNPurchases) not found.'
+        )
+      );
+
+    expect(result.environment).toBe(
+      'provider_unavailable'
+    );
+    expect(result.message).not.toContain(
+      'RevenueCat'
+    );
+    expect(result.message).not.toContain(
+      'RNPurchases'
+    );
+  });
+
+  test('sanitizes provider action errors', () => {
+    const message =
+      sanitizeSubscriptionActionError(
+        new Error(
+          '[RevenueCat] Native module (RNPurchases) not found.'
+        ),
+        'fallback'
+      );
+
+    expect(message).not.toContain(
+      'RevenueCat'
+    );
+    expect(message).not.toContain(
+      'RNPurchases'
+    );
+    expect(message).not.toBe('fallback');
   });
 });

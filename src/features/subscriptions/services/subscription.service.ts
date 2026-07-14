@@ -9,7 +9,20 @@ import type {
   PurchaseActionResult,
   SubscriptionPackageSummary,
   SubscriptionSnapshot,
+  SubscriptionStoreMode,
 } from '../types/subscription.types';
+
+const PROVIDER_UNAVAILABLE_MESSAGE =
+  'La suscripción premium no está disponible en este build todavía. Reinstala o recompila la app de desarrollo y vuelve a intentarlo.';
+
+const GENERIC_LOAD_ERROR =
+  'No pudimos cargar la suscripción en este momento. Intenta nuevamente en unos minutos.';
+
+const GENERIC_PURCHASE_ERROR =
+  'No pudimos procesar la compra en este momento. Intenta nuevamente más tarde.';
+
+const GENERIC_RESTORE_ERROR =
+  'No pudimos restaurar tus compras en este momento. Intenta nuevamente más tarde.';
 
 const getAppleApiKey = () =>
   process.env.EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY;
@@ -17,9 +30,32 @@ const getAppleApiKey = () =>
 const getGoogleApiKey = () =>
   process.env.EXPO_PUBLIC_REVENUECAT_GOOGLE_API_KEY;
 
+const getTestApiKey = () =>
+  process.env.EXPO_PUBLIC_REVENUECAT_TEST_API_KEY;
+
+const shouldUseTestStore = () =>
+  process.env.EXPO_PUBLIC_REVENUECAT_USE_TEST_STORE ===
+  'true';
+
 const getEntitlementId = () =>
   process.env.EXPO_PUBLIC_REVENUECAT_PREMIUM_ENTITLEMENT_ID ??
   'premium';
+
+const getStoreMode = (): SubscriptionStoreMode => {
+  if (shouldUseTestStore()) {
+    return 'test_store';
+  }
+
+  if (Platform.OS === 'ios') {
+    return 'app_store';
+  }
+
+  if (Platform.OS === 'android') {
+    return 'play_store';
+  }
+
+  return 'unknown';
+};
 
 export const subscriptionBenefits = [
   {
@@ -46,6 +82,10 @@ const isPreviewMode = () =>
   Constants.appOwnership === 'expo';
 
 const getPlatformApiKey = () => {
+  if (shouldUseTestStore()) {
+    return getTestApiKey();
+  }
+
   if (Platform.OS === 'ios') {
     return getAppleApiKey();
   }
@@ -84,6 +124,65 @@ const mapPackages = (
 
 export const isRevenueCatPreviewMode = () =>
   isPreviewMode();
+
+const isProviderUnavailableError = (
+  error: unknown
+) => {
+  const message =
+    error instanceof Error
+      ? error.message
+      : String(error ?? '');
+  const normalizedMessage =
+    message.toLowerCase();
+
+  return (
+    normalizedMessage.includes('rnpurchases') ||
+    normalizedMessage.includes('revenuecat') ||
+    normalizedMessage.includes('native module') ||
+    normalizedMessage.includes('not found') ||
+    normalizedMessage.includes('not properly linked')
+  );
+};
+
+export const sanitizeSubscriptionLoadError = (
+  error: unknown
+) => {
+  if (isProviderUnavailableError(error)) {
+    return {
+      environment:
+        'provider_unavailable' as const,
+      message:
+        PROVIDER_UNAVAILABLE_MESSAGE,
+    };
+  }
+
+  return {
+    environment: null,
+    message:
+      error instanceof Error &&
+      error.message.trim().length > 0
+        ? error.message
+        : GENERIC_LOAD_ERROR,
+  };
+};
+
+export const sanitizeSubscriptionActionError = (
+  error: unknown,
+  fallbackMessage: string
+) => {
+  if (isProviderUnavailableError(error)) {
+    return PROVIDER_UNAVAILABLE_MESSAGE;
+  }
+
+  if (
+    error instanceof Error &&
+    error.message.trim().length > 0
+  ) {
+    return error.message;
+  }
+
+  return fallbackMessage;
+};
 
 export const configureRevenueCat = async (
   ownerId: string
@@ -126,8 +225,11 @@ export const getSubscriptionSnapshot = async (
   ) {
     return {
       environment: 'unsupported_platform',
+      storeMode: getStoreMode(),
       access: 'free',
       entitlementId: getEntitlementId(),
+      appUserId: ownerId,
+      originalAppUserId: null,
       customerInfo: null,
       offering: null,
       packages: [],
@@ -137,8 +239,11 @@ export const getSubscriptionSnapshot = async (
   if (!getPlatformApiKey()) {
     return {
       environment: 'missing_keys',
+      storeMode: getStoreMode(),
       access: 'free',
       entitlementId: getEntitlementId(),
+      appUserId: ownerId,
+      originalAppUserId: null,
       customerInfo: null,
       offering: null,
       packages: [],
@@ -146,6 +251,14 @@ export const getSubscriptionSnapshot = async (
   }
 
   await configureRevenueCat(ownerId);
+  Purchases.invalidateCustomerInfoCache();
+
+  if (!shouldUseTestStore()) {
+    await Purchases.syncPurchases();
+  }
+
+  const appUserId =
+    await Purchases.getAppUserID();
 
   const [
     customerInfo,
@@ -165,10 +278,14 @@ export const getSubscriptionSnapshot = async (
     environment: isPreviewMode()
       ? 'preview'
       : 'configured',
+    storeMode: getStoreMode(),
     access: getActiveEntitlement(customerInfo)
       ? 'premium'
       : 'free',
     entitlementId: getEntitlementId(),
+    appUserId,
+    originalAppUserId:
+      customerInfo?.originalAppUserId ?? null,
     customerInfo,
     offering: currentOffering,
     packages,
@@ -219,9 +336,10 @@ export const purchaseSubscriptionPackage =
       return {
         kind: 'error',
         message:
-          error instanceof Error
-            ? error.message
-            : 'No pudimos procesar la compra.',
+          sanitizeSubscriptionActionError(
+            error,
+            GENERIC_PURCHASE_ERROR
+          ),
       };
     }
   };
@@ -254,9 +372,10 @@ export const restoreSubscriptionPurchases =
       return {
         kind: 'error',
         message:
-          error instanceof Error
-            ? error.message
-            : 'No pudimos restaurar tus compras.',
+          sanitizeSubscriptionActionError(
+            error,
+            GENERIC_RESTORE_ERROR
+          ),
       };
     }
   };

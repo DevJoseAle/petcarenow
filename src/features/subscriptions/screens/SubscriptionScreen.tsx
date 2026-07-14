@@ -18,6 +18,8 @@ export default function SubscriptionScreen() {
     benefits,
     snapshot,
     currentPackage,
+    packages,
+    selectedPackageId,
     isHydrating,
     isPurchasing,
     isRestoring,
@@ -25,6 +27,7 @@ export default function SubscriptionScreen() {
     feedbackMessage,
     goBack,
     retry,
+    handleSelectPackage,
     handlePurchase,
     handleRestore,
   } = useSubscriptionScreen();
@@ -35,6 +38,9 @@ export default function SubscriptionScreen() {
     snapshot?.environment === 'preview';
   const isConfigMissing =
     snapshot?.environment === 'missing_keys';
+  const isProviderUnavailable =
+    snapshot?.environment ===
+    'provider_unavailable';
   const isUnsupported =
     snapshot?.environment ===
     'unsupported_platform';
@@ -119,6 +125,43 @@ export default function SubscriptionScreen() {
                   ? `Tu entitlement activo es ${snapshot?.entitlementId}.`
                   : 'Aún no hay un entitlement premium activo para esta cuenta.'}
               </Text>
+              {snapshot ? (
+                <View style={styles.debugBlock}>
+                  <Text
+                    style={[
+                      styles.debugText,
+                      {
+                        color:
+                          theme.textSecondary,
+                      },
+                    ]}
+                  >
+                    Modo: {snapshot.storeMode}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.debugText,
+                      {
+                        color:
+                          theme.textSecondary,
+                      },
+                    ]}
+                  >
+                    App User ID: {snapshot.appUserId ?? 'N/D'}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.debugText,
+                      {
+                        color:
+                          theme.textSecondary,
+                      },
+                    ]}
+                  >
+                    Original App User ID: {snapshot.originalAppUserId ?? 'N/D'}
+                  </Text>
+                </View>
+              ) : null}
             </SubscriptionSection>
 
             {isPreview ? (
@@ -156,6 +199,19 @@ export default function SubscriptionScreen() {
                   ]}
                 >
                   Esta experiencia de suscripción está pensada para iOS y Android.
+                </Text>
+              </SubscriptionSection>
+            ) : null}
+
+            {isProviderUnavailable ? (
+              <SubscriptionSection title="Suscripción no disponible">
+                <Text
+                  style={[
+                    styles.helperText,
+                    { color: theme.textSecondary },
+                  ]}
+                >
+                  Este build todavía no tiene disponible el módulo de compras nativas. Reinstala o recompila la app de desarrollo para volver a probar Premium.
                 </Text>
               </SubscriptionSection>
             ) : null}
@@ -204,50 +260,65 @@ export default function SubscriptionScreen() {
             <SubscriptionSection
               title="Plan disponible"
             >
-              {currentPackage ? (
-                <View
-                  style={[
-                    styles.packageCard,
-                    {
-                      borderColor: theme.border,
-                      backgroundColor:
-                        theme.background,
-                    },
-                  ]}
-                >
-                  <Text
-                    style={[
-                      styles.packageTitle,
-                      {
-                        color:
-                          theme.textPrimary,
-                      },
-                    ]}
-                  >
-                    {currentPackage.title}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.packagePrice,
-                      {
-                        color:
-                          theme.primaryPressed,
-                      },
-                    ]}
-                  >
-                    {currentPackage.price}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.packageDescription,
-                      {
-                        color:
-                          theme.textSecondary,
-                      },
-                    ]}
-                  >
-                    {currentPackage.description}
-                  </Text>
+              {packages.length ? (
+                <View style={styles.packageList}>
+                  {packages.map((item) => {
+                    const isSelected =
+                      item.id === selectedPackageId;
+
+                    return (
+                      <Pressable
+                        key={item.id}
+                        onPress={() =>
+                          handleSelectPackage(item)
+                        }
+                        style={[
+                          styles.packageCard,
+                          {
+                            borderColor: isSelected
+                              ? theme.primaryPressed
+                              : theme.border,
+                            backgroundColor:
+                              theme.background,
+                          },
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            styles.packageTitle,
+                            {
+                              color:
+                                theme.textPrimary,
+                            },
+                          ]}
+                        >
+                          {item.title}
+                        </Text>
+                        <Text
+                          style={[
+                            styles.packagePrice,
+                            {
+                              color:
+                                theme.primaryPressed,
+                            },
+                          ]}
+                        >
+                          {item.price}
+                        </Text>
+                        <Text
+                          style={[
+                            styles.packageDescription,
+                            {
+                              color:
+                                theme.textSecondary,
+                            },
+                          ]}
+                        >
+                          {item.description}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
                 </View>
               ) : (
                 <Text
@@ -277,6 +348,7 @@ export default function SubscriptionScreen() {
                 isPurchasing ||
                 !snapshot ||
                 isConfigMissing ||
+                isProviderUnavailable ||
                 isUnsupported
               }
             />
@@ -292,6 +364,7 @@ export default function SubscriptionScreen() {
                 isRestoring ||
                 !snapshot ||
                 isConfigMissing ||
+                isProviderUnavailable ||
                 isUnsupported
               }
             />
@@ -455,6 +528,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
   },
+  debugBlock: {
+    marginTop: 12,
+    rowGap: 4,
+  },
+  debugText: {
+    fontSize: 12,
+    lineHeight: 18,
+  },
   benefitCard: {
     borderWidth: 1,
     borderRadius: 18,
@@ -474,6 +555,9 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     padding: 16,
     gap: 8,
+  },
+  packageList: {
+    gap: 12,
   },
   packageTitle: {
     fontSize: 18,

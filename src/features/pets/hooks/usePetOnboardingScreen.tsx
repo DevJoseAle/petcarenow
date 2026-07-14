@@ -5,7 +5,10 @@ import {
 import { Alert, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuthStore } from '@/features/auth/store/auth.store';
+import { useSubscriptionStore } from '@/features/subscriptions/store/subscription.store';
+import { evaluatePetCreationAccess } from '@/features/subscriptions/services/subscription-access.service';
 import { createPet } from '../services/pet.service';
+import { getPetUsageSummary } from '../services/pet.service';
 import {
   pickPetPhotoFromLibrary,
   takePetPhoto,
@@ -36,6 +39,10 @@ const totalSteps = 6;
 export const usePetOnboardingScreen = () => {
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
+  const hydrateSubscription =
+    useSubscriptionStore(
+      (state) => state.hydrate
+    );
   const markHasPets =
     usePetOnboardingGateStore(
       (state) => state.markHasPets
@@ -173,6 +180,49 @@ export const usePetOnboardingScreen = () => {
 
     setIsSubmitting(true);
     setGeneralError('');
+
+    try {
+      await hydrateSubscription(user.id);
+
+      const accessTier =
+        useSubscriptionStore.getState().accessTier;
+      const usage =
+        await getPetUsageSummary(user.id);
+      const decision =
+        evaluatePetCreationAccess({
+          accessTier,
+          usage,
+        });
+
+      if (decision.status === 'blocked_by_plan') {
+        setIsSubmitting(false);
+        setGeneralError(decision.message);
+        Alert.alert(
+          'Límite del plan gratuito',
+          decision.message,
+          [
+            {
+              text: 'Más tarde',
+              style: 'cancel',
+            },
+            {
+              text: 'Ver Premium',
+              onPress: () =>
+                router.push('/subscription'),
+            },
+          ]
+        );
+        return;
+      }
+    } catch (error) {
+      setIsSubmitting(false);
+      setGeneralError(
+        error instanceof Error
+          ? error.message
+          : 'No pudimos validar tu plan.'
+      );
+      return;
+    }
 
     const result = await createPet(
       sanitizePetPayload(user.id, form),

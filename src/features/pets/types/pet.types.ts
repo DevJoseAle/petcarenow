@@ -65,6 +65,12 @@ export interface PetServiceError {
   message: string;
 }
 
+export interface PetUsageSummary {
+  totalPets: number;
+  activePets: number;
+  inactivePets: number;
+}
+
 export type CreatePetResult =
   | {
       success: true;

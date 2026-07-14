@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { useAuthStore } from '@/features/auth/store/auth.store';
+import { useSubscriptionStore } from '../store/subscription.store';
 import {
-  getSubscriptionSnapshot,
   purchaseSubscriptionPackage,
   restoreSubscriptionPurchases,
+  sanitizeSubscriptionActionError,
   subscriptionBenefits,
 } from '../services/subscription.service';
 import type {
   PurchaseActionResult,
-  SubscriptionSnapshot,
+  SubscriptionPackageSummary,
 } from '../types/subscription.types';
 
 export const useSubscriptionScreen = () => {
@@ -17,50 +18,53 @@ export const useSubscriptionScreen = () => {
   const ownerId = useAuthStore(
     (state) => state.user?.id ?? null
   );
-  const [snapshot, setSnapshot] =
-    useState<SubscriptionSnapshot | null>(null);
-  const [isHydrating, setIsHydrating] =
-    useState(true);
+  const {
+    snapshot,
+    isHydrating,
+    generalError: hydrationError,
+    hydrate,
+  } = useSubscriptionStore();
   const [isPurchasing, setIsPurchasing] =
     useState(false);
   const [isRestoring, setIsRestoring] =
     useState(false);
-  const [generalError, setGeneralError] =
+  const [actionError, setActionError] =
     useState('');
   const [feedbackMessage, setFeedbackMessage] =
     useState('');
+  const [
+    selectedPackageId,
+    setSelectedPackageId,
+  ] = useState<string | null>(null);
 
-  const hydrate = async () => {
-    if (!ownerId) {
-      setGeneralError(
-        'No encontramos una sesión activa para cargar tu suscripción.'
-      );
-      setIsHydrating(false);
-      return;
-    }
-
-    setIsHydrating(true);
-    setGeneralError('');
+  const hydrateSnapshot = async () => {
+    setActionError('');
     setFeedbackMessage('');
-
-    try {
-      const nextSnapshot =
-        await getSubscriptionSnapshot(ownerId);
-      setSnapshot(nextSnapshot);
-    } catch (error) {
-      setGeneralError(
-        error instanceof Error
-          ? error.message
-          : 'No pudimos cargar tu estado de suscripción.'
-      );
-    } finally {
-      setIsHydrating(false);
-    }
+    await hydrate(ownerId);
   };
 
   useEffect(() => {
-    void hydrate();
+    void hydrateSnapshot();
   }, [ownerId]);
+
+  useEffect(() => {
+    const firstPackageId =
+      snapshot?.packages[0]?.id ?? null;
+
+    if (!snapshot?.packages.length) {
+      setSelectedPackageId(null);
+      return;
+    }
+
+    const selectedPackageStillExists =
+      snapshot.packages.some(
+        (item) => item.id === selectedPackageId
+      );
+
+    if (!selectedPackageStillExists) {
+      setSelectedPackageId(firstPackageId);
+    }
+  }, [selectedPackageId, snapshot]);
 
   const applyPurchaseResult = async (
     result: PurchaseActionResult
@@ -71,35 +75,41 @@ export const useSubscriptionScreen = () => {
       result.kind === 'purchased' ||
       result.kind === 'restored'
     ) {
-      await hydrate();
+      await hydrate(ownerId);
     }
   };
 
   const handlePurchase = async () => {
+    const selectedPackage =
+      snapshot?.packages.find(
+        (item) => item.id === selectedPackageId
+      ) ?? snapshot?.packages[0];
+
     if (
       !ownerId ||
-      !snapshot?.packages.length ||
+      !selectedPackage ||
       isPurchasing
     ) {
       return;
     }
 
     setIsPurchasing(true);
-    setGeneralError('');
+    setActionError('');
     setFeedbackMessage('');
 
     try {
       const result =
         await purchaseSubscriptionPackage(
           ownerId,
-          snapshot.packages[0].package
+          selectedPackage.package
         );
       await applyPurchaseResult(result);
     } catch (error) {
-      setGeneralError(
-        error instanceof Error
-          ? error.message
-          : 'No pudimos iniciar la compra.'
+      setActionError(
+        sanitizeSubscriptionActionError(
+          error,
+          'No pudimos iniciar la compra.'
+        )
       );
     } finally {
       setIsPurchasing(false);
@@ -112,7 +122,7 @@ export const useSubscriptionScreen = () => {
     }
 
     setIsRestoring(true);
-    setGeneralError('');
+    setActionError('');
     setFeedbackMessage('');
 
     try {
@@ -122,10 +132,11 @@ export const useSubscriptionScreen = () => {
         );
       await applyPurchaseResult(result);
     } catch (error) {
-      setGeneralError(
-        error instanceof Error
-          ? error.message
-          : 'No pudimos restaurar tus compras.'
+      setActionError(
+        sanitizeSubscriptionActionError(
+          error,
+          'No pudimos restaurar tus compras.'
+        )
       );
     } finally {
       setIsRestoring(false);
@@ -133,19 +144,33 @@ export const useSubscriptionScreen = () => {
   };
 
   const currentPackage =
-    snapshot?.packages[0] ?? null;
+    snapshot?.packages.find(
+      (item) => item.id === selectedPackageId
+    ) ??
+    snapshot?.packages[0] ??
+    null;
+
+  const handleSelectPackage = (
+    selectedPackage: SubscriptionPackageSummary
+  ) => {
+    setSelectedPackageId(selectedPackage.id);
+  };
 
   return {
     benefits: subscriptionBenefits,
     snapshot,
     currentPackage,
+    packages: snapshot?.packages ?? [],
+    selectedPackageId,
     isHydrating,
     isPurchasing,
     isRestoring,
-    generalError,
+    generalError:
+      actionError || hydrationError,
     feedbackMessage,
     goBack: () => router.back(),
-    retry: hydrate,
+    retry: hydrateSnapshot,
+    handleSelectPackage,
     handlePurchase,
     handleRestore,
   };

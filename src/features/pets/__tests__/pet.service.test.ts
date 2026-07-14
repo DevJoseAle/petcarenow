@@ -1,6 +1,7 @@
 import {
   createPet,
   deletePet,
+  getPetUsageSummary,
   getUserPets,
   hasRegisteredPets,
   updatePet,
@@ -103,6 +104,35 @@ describe('pet.service', () => {
       'is_active',
       true
     );
+  });
+
+  test('builds a pet usage summary including inactive pets', async () => {
+    const ownerEq = jest.fn().mockResolvedValue({
+      data: [
+        {
+          id: 'pet-1',
+          is_active: true,
+        },
+        {
+          id: 'pet-2',
+          is_active: false,
+        },
+      ],
+      error: null,
+    });
+    const select = jest.fn(() => ({ eq: ownerEq }));
+
+    mockedSupabase.from.mockReturnValue({
+      select,
+    } as never);
+
+    await expect(
+      getPetUsageSummary('user-1')
+    ).resolves.toEqual({
+      totalPets: 2,
+      activePets: 1,
+      inactivePets: 1,
+    });
   });
 
   test('creates pet and returns inserted row', async () => {

@@ -9,6 +9,7 @@ import {
   purchaseSubscriptionPackage,
   restoreSubscriptionPurchases,
 } from '../services/subscription.service';
+import { useSubscriptionStore } from '../store/subscription.store';
 
 const mockBack = jest.fn();
 
@@ -29,6 +30,31 @@ jest.mock('../services/subscription.service', () => ({
   getSubscriptionSnapshot: jest.fn(),
   purchaseSubscriptionPackage: jest.fn(),
   restoreSubscriptionPurchases: jest.fn(),
+  sanitizeSubscriptionLoadError: jest.fn(
+    (error: unknown) => {
+      const message =
+        error instanceof Error
+          ? error.message
+          : String(error ?? '');
+
+      if (
+        message.includes('RevenueCat') ||
+        message.includes('RNPurchases')
+      ) {
+        return {
+          environment:
+            'provider_unavailable' as const,
+          message:
+            'La suscripción premium no está disponible en este build todavía. Reinstala o recompila la app de desarrollo y vuelve a intentarlo.',
+        };
+      }
+
+      return {
+        environment: null,
+        message: message || 'Error de prueba',
+      };
+    }
+  ),
 }));
 
 jest.mock('@/features/auth/store/auth.store', () => ({
@@ -45,12 +71,18 @@ jest.mock('@/features/auth/store/auth.store', () => ({
 describe('useSubscriptionScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    act(() => {
+      useSubscriptionStore.getState().reset();
+    });
     (
       getSubscriptionSnapshot as jest.Mock
     ).mockResolvedValue({
       environment: 'preview',
+      storeMode: 'app_store',
       access: 'free',
       entitlementId: 'premium',
+      appUserId: 'user-1',
+      originalAppUserId: 'user-1',
       customerInfo: null,
       offering: null,
       packages: [
@@ -77,6 +109,12 @@ describe('useSubscriptionScreen', () => {
     ).mockResolvedValue({
       kind: 'preview',
       message: 'Restore preview',
+    });
+  });
+
+  afterEach(() => {
+    act(() => {
+      useSubscriptionStore.getState().reset();
     });
   });
 
@@ -145,5 +183,35 @@ describe('useSubscriptionScreen', () => {
     expect(
       restoreSubscriptionPurchases
     ).toHaveBeenCalledWith('user-1');
+  });
+
+  test('maps provider errors to controlled state', async () => {
+    (
+      getSubscriptionSnapshot as jest.Mock
+    ).mockRejectedValue(
+      new Error(
+        '[RevenueCat] Native module (RNPurchases) not found.'
+      )
+    );
+
+    const { result } = renderHook(() =>
+      useSubscriptionScreen()
+    );
+
+    await waitFor(() => {
+      expect(result.current.isHydrating).toBe(
+        false
+      );
+    });
+
+    expect(result.current.snapshot?.environment).toBe(
+      'provider_unavailable'
+    );
+    expect(result.current.generalError).not.toContain(
+      'RevenueCat'
+    );
+    expect(result.current.generalError).not.toContain(
+      'RNPurchases'
+    );
   });
 });

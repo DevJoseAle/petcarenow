@@ -2,9 +2,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { Alert, Platform } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useAuthStore } from '@/features/auth/store/auth.store';
+import { useSubscriptionStore } from '@/features/subscriptions/store/subscription.store';
+import { evaluatePetCreationAccess } from '@/features/subscriptions/services/subscription-access.service';
 import {
   createPet,
   deletePet,
+  getPetUsageSummary,
   updatePet,
 } from '../services/pet.service';
 import {
@@ -29,6 +32,10 @@ export const usePetDetailScreen = () => {
   const userId = useAuthStore(
     (state) => state.user?.id ?? null
   );
+  const hydrateSubscription =
+    useSubscriptionStore(
+      (state) => state.hydrate
+    );
   const {
     pets,
     upsertPet,
@@ -227,6 +234,49 @@ export const usePetDetailScreen = () => {
     setGeneralError('');
 
     if (isCreateMode) {
+      try {
+        await hydrateSubscription(userId);
+
+        const accessTier =
+          useSubscriptionStore.getState().accessTier;
+        const usage =
+          await getPetUsageSummary(userId);
+        const decision =
+          evaluatePetCreationAccess({
+            accessTier,
+            usage,
+          });
+
+        if (decision.status === 'blocked_by_plan') {
+          setIsSubmitting(false);
+          setGeneralError(decision.message);
+          Alert.alert(
+            'Límite del plan gratuito',
+            decision.message,
+            [
+              {
+                text: 'Más tarde',
+                style: 'cancel',
+              },
+              {
+                text: 'Ver Premium',
+                onPress: () =>
+                  router.push('/subscription'),
+              },
+            ]
+          );
+          return;
+        }
+      } catch (error) {
+        setIsSubmitting(false);
+        setGeneralError(
+          error instanceof Error
+            ? error.message
+            : 'No pudimos validar tu plan.'
+        );
+        return;
+      }
+
       const result = await createPet(
         {
           owner_id: userId,
