@@ -13,6 +13,8 @@ jest.mock('@/components/Screen', () => ({
   },
 }));
 
+jest.mock('@/components/icons/Ionicons', () => 'Ionicons');
+
 jest.mock('../hooks/useMoreScreen', () => ({
   useMoreScreen: () => ({
     isLoggingOut: false,
@@ -26,9 +28,9 @@ jest.mock('../hooks/useMoreScreen', () => ({
         onPress: jest.fn(),
       },
       {
-        id: 'settings',
-        label: 'Configuración',
-        status: 'coming-soon',
+        id: 'help',
+        label: 'Ayuda',
+        status: 'active',
         onPress: jest.fn(),
       },
       {
@@ -52,13 +54,10 @@ describe('MoreScreen', () => {
       screen.getByText('Perfil de usuario')
     ).toBeTruthy();
     expect(
-      screen.getByText('Configuración')
+      screen.getByText('Ayuda')
     ).toBeTruthy();
     expect(
       screen.getByText('Suscripción / Premium')
-    ).toBeTruthy();
-    expect(
-      screen.getByText('Próximamente')
     ).toBeTruthy();
     expect(
       screen.getByText('Cerrar sesión')
