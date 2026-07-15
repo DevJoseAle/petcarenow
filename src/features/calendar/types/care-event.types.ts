@@ -60,3 +60,7 @@ export interface UpdateCareEventInput {
   reminder_at?: string | null;
   metadata?: CareEventMetadata | null;
 }
+
+export interface CareEventUsageSummary {
+  totalEvents: number;
+}

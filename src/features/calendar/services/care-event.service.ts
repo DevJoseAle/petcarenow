@@ -1,6 +1,7 @@
 import { supabase } from '@/config/supabase';
 import type {
   CareEvent,
+  CareEventUsageSummary,
   CreateCareEventInput,
   UpdateCareEventInput,
 } from '../types/care-event.types';
@@ -57,6 +58,26 @@ export const listCareEvents = async (
   }
 
   return (data ?? []) as CareEvent[];
+};
+
+export const getCareEventUsageSummary = async (
+  ownerId: string
+): Promise<CareEventUsageSummary> => {
+  const { count, error } = await supabase
+    .from('care_events')
+    .select('id', {
+      count: 'exact',
+      head: true,
+    })
+    .eq('owner_id', ownerId);
+
+  if (error) {
+    throw mapCareEventError(error);
+  }
+
+  return {
+    totalEvents: count ?? 0,
+  };
 };
 
 export const listUpcomingCareEventsByPet = async (

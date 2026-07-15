@@ -8,11 +8,14 @@ import { useAuthStore } from '@/features/auth/store/auth.store';
 import { usePetStore } from '@/features/pets/store/pet.store';
 import {
   createCareEvent,
+  getCareEventUsageSummary,
   getCareEventById,
   updateCareEvent,
 } from '../services/care-event.service';
 import { syncNotificationsForOwner } from '@/features/notifications/services/notifications.service';
 import type { CareEventType } from '../types/care-event.types';
+import { useSubscriptionStore } from '@/features/subscriptions/store/subscription.store';
+import { evaluateEventCreationAccess } from '@/features/subscriptions/services/subscription-access.service';
 import {
   buildIsoDateTime,
   formatLocalDateInput,
@@ -29,6 +32,10 @@ export const useEventEntryScreen = () => {
   const userId = useAuthStore(
     (state) => state.user?.id ?? null
   );
+  const hydrateSubscription =
+    useSubscriptionStore(
+      (state) => state.hydrate
+    );
   const { pets, activePetId } = usePetStore();
   const activePet =
     pets.find((pet) => pet.id === activePetId) ??
@@ -153,32 +160,59 @@ export const useEventEntryScreen = () => {
     const startsAt = buildIsoDateTime(date, time);
     const reminderAt = startsAt;
 
-    if (isEditMode && params.eventId) {
-      await updateCareEvent(userId, params.eventId, {
-        event_type: eventType,
-        title: title.trim(),
-        description: description.trim() || null,
-        starts_at: startsAt,
-        reminder_at: reminderAt,
-      });
-    } else {
-      await createCareEvent({
-        owner_id: userId,
-        pet_id: activePet.id,
-        event_type: eventType,
-        title: title.trim(),
-        description: description.trim() || null,
-        starts_at: startsAt,
-        reminder_at: reminderAt,
-      });
+    try {
+      if (isEditMode && params.eventId) {
+        await updateCareEvent(userId, params.eventId, {
+          event_type: eventType,
+          title: title.trim(),
+          description: description.trim() || null,
+          starts_at: startsAt,
+          reminder_at: reminderAt,
+        });
+      } else {
+        await hydrateSubscription(userId);
+
+        const accessTier =
+          useSubscriptionStore.getState().accessTier;
+        const usage =
+          await getCareEventUsageSummary(userId);
+        const decision =
+          evaluateEventCreationAccess({
+            accessTier,
+            usage,
+          });
+
+        if (decision.status === 'blocked_by_plan') {
+          setGeneralError(decision.message);
+          setIsSubmitting(false);
+          return;
+        }
+
+        await createCareEvent({
+          owner_id: userId,
+          pet_id: activePet.id,
+          event_type: eventType,
+          title: title.trim(),
+          description: description.trim() || null,
+          starts_at: startsAt,
+          reminder_at: reminderAt,
+        });
+      }
+
+      await syncNotificationsForOwner(userId).catch(
+        () => null
+      );
+
+      setIsSubmitting(false);
+      router.back();
+    } catch (error) {
+      setIsSubmitting(false);
+      setGeneralError(
+        error instanceof Error
+          ? error.message
+          : 'No pudimos validar tu plan.'
+      );
     }
-
-    await syncNotificationsForOwner(userId).catch(
-      () => null
-    );
-
-    setIsSubmitting(false);
-    router.back();
   };
 
   return {

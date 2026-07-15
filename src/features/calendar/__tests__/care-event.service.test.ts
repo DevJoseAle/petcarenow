@@ -2,6 +2,7 @@ import {
   createCareEvent,
   deleteCareEvent,
   getCareEventById,
+  getCareEventUsageSummary,
   getLatestConsultationByPet,
   listCareEvents,
   listUpcomingCareEventsByPet,
@@ -68,6 +69,24 @@ describe('care-event.service', () => {
         pet_id: 'pet-1',
       }),
     ]);
+  });
+
+  test('returns the total event usage for the owner', async () => {
+    const ownerEq = jest.fn().mockResolvedValue({
+      count: 4,
+      error: null,
+    });
+    const select = jest.fn(() => ({ eq: ownerEq }));
+
+    mockedSupabase.from.mockReturnValue({
+      select,
+    } as never);
+
+    await expect(
+      getCareEventUsageSummary('user-1')
+    ).resolves.toEqual({
+      totalEvents: 4,
+    });
   });
 
   test('returns only vaccines for the selected pet', async () => {

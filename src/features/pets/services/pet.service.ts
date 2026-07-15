@@ -3,6 +3,7 @@ import type {
   CreatePetInput,
   CreatePetResult,
   Pet,
+  PetUsageSummary,
   PetServiceError,
   UpdatePetInput,
 } from '../types/pet.types';
@@ -147,6 +148,33 @@ export const getUserPets = async (
   }
 
   return (data ?? []) as Pet[];
+};
+
+export const getPetUsageSummary = async (
+  ownerId: string
+): Promise<PetUsageSummary> => {
+  const { data, error } = await supabase
+    .from('pets')
+    .select('id, is_active')
+    .eq('owner_id', ownerId);
+
+  if (error) {
+    throw mapPetError(error);
+  }
+
+  const pets = (data ?? []) as Pick<
+    Pet,
+    'id' | 'is_active'
+  >[];
+  const activePets = pets.filter(
+    (pet) => pet.is_active
+  ).length;
+
+  return {
+    totalPets: pets.length,
+    activePets,
+    inactivePets: pets.length - activePets,
+  };
 };
 
 export const createPet = async (

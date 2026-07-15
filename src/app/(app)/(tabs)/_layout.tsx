@@ -8,10 +8,6 @@ import Ionicons from '@/components/icons/Ionicons';
 import { useMemo, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
-import {
-  GlassView,
-  isGlassEffectAPIAvailable,
-} from 'expo-glass-effect';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -50,10 +46,6 @@ export default function TabsLayout() {
     [router]
   );
 
-  const canUseGlassButton =
-    Platform.OS === 'ios' &&
-    isGlassEffectAPIAvailable();
-
   return (
     <>
       <NativeTabs
@@ -71,7 +63,7 @@ export default function TabsLayout() {
       >
         <NativeTabs.Trigger
           name="index"
-          labelVisibilityMode='unlabeled'
+          labelVisibilityMode="unlabeled"
           disableAutomaticContentInsets
         >
           <NativeTabs.Trigger.Icon
@@ -122,7 +114,6 @@ export default function TabsLayout() {
               default: 'assignment',
               selected: 'assignment',
             }}
-
           />
           <NativeTabs.Trigger.Label hidden>
             Registros
@@ -158,7 +149,7 @@ export default function TabsLayout() {
               selected:
                 'line.3.horizontal.decrease.circle.fill',
             }}
-           md={{
+            md={{
               default: 'menu',
               selected: 'menu',
             }}
@@ -183,33 +174,18 @@ export default function TabsLayout() {
             },
           ]}
         >
-          {canUseGlassButton ? (
-            <GlassView
-              glassEffectStyle="regular"
-              tintColor="rgba(109, 77, 255, 0.18)"
-              isInteractive
-              style={styles.plusButtonGlass}
-            >
-              <Ionicons
-                name="add"
-                size={32}
-                color="#6D4DFF"
-              />
-            </GlassView>
-          ) : (
-            <LinearGradient
-              colors={['#7C63FF', '#6D4DFF']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.plusButtonFallback}
-            >
-              <Ionicons
-                name="add"
-                size={32}
-                color="#FFFFFF"
-              />
-            </LinearGradient>
-          )}
+          <LinearGradient
+            colors={['#7C63FF', '#6D4DFF']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.plusButtonFallback}
+          >
+            <Ionicons
+              name="add"
+              size={32}
+              color="#FFFFFF"
+            />
+          </LinearGradient>
         </Pressable>
       </View>
 
@@ -238,13 +214,6 @@ const styles = StyleSheet.create({
   },
   plusButtonPressable: {
     position: 'absolute',
-  },
-  plusButtonGlass: {
-    width: 66,
-    height: 66,
-    borderRadius: 33,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   plusButtonFallback: {
     width: 66,
