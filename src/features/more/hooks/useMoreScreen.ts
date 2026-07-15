@@ -100,8 +100,9 @@ export const useMoreScreen = () => {
       {
         id: 'help',
         label: 'Ayuda',
-        status: 'coming-soon',
-        onPress: () => showComingSoon('Ayuda'),
+        status: 'active',
+        onPress: () =>
+          router.push('/help' as never),
       },
       {
         id: 'legal',
