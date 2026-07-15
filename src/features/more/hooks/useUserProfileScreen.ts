@@ -1,10 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { useAuthStore } from '@/features/auth/store/auth.store';
+import { usePetOnboardingGateStore } from '@/features/pets/store/petOnboardingGate.store';
+import { usePetStore } from '@/features/pets/store/pet.store';
+import { useSubscriptionStore } from '@/features/subscriptions/store/subscription.store';
 import {
   getProfileById,
   updateProfile,
 } from '../services/profile.service';
+import { deleteCurrentUserAccount } from '../services/account-deletion.service';
 
 const normalizeOptionalValue = (value: string) => {
   const trimmed = value.trim();
@@ -14,6 +18,23 @@ const normalizeOptionalValue = (value: string) => {
 export const useUserProfileScreen = () => {
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
+  const clearSession = useAuthStore(
+    (state) => state.clearSession
+  );
+  const setSession = useAuthStore(
+    (state) => state.setSession
+  );
+  const resetPetGate =
+    usePetOnboardingGateStore(
+      (state) => state.reset
+    );
+  const resetPets = usePetStore(
+    (state) => state.reset
+  );
+  const resetSubscription =
+    useSubscriptionStore(
+      (state) => state.reset
+    );
   const [fullName, setFullName] = useState('');
   const [country, setCountry] = useState('');
   const [language, setLanguage] = useState('es');
@@ -29,6 +50,18 @@ export const useUserProfileScreen = () => {
     onboardingCompleted,
     setOnboardingCompleted,
   ] = useState(false);
+  const [
+    isDeleteConfirmationVisible,
+    setIsDeleteConfirmationVisible,
+  ] = useState(false);
+  const [
+    isDeletingAccount,
+    setIsDeletingAccount,
+  ] = useState(false);
+  const [
+    deleteAccountError,
+    setDeleteAccountError,
+  ] = useState('');
 
   const hydrate = async () => {
     if (!user?.id) {
@@ -107,6 +140,67 @@ export const useUserProfileScreen = () => {
     }
   };
 
+  const cleanupDeletedAccountSession =
+    async () => {
+      try {
+        await clearSession();
+      } catch {
+        // If remote sign-out fails after deletion,
+        // force local auth state cleanup so the user
+        // can leave the authenticated flow safely.
+        setSession(null);
+      } finally {
+        resetPetGate();
+        resetPets();
+        resetSubscription();
+      }
+    };
+
+  const openDeleteAccountConfirmation =
+    () => {
+      if (isDeletingAccount) {
+        return;
+      }
+
+      setDeleteAccountError('');
+      setIsDeleteConfirmationVisible(true);
+    };
+
+  const closeDeleteAccountConfirmation =
+    () => {
+      if (isDeletingAccount) {
+        return;
+      }
+
+      setDeleteAccountError('');
+      setIsDeleteConfirmationVisible(false);
+    };
+
+  const handleDeleteAccount = async () => {
+    if (!user?.id || isDeletingAccount) {
+      return;
+    }
+
+    setIsDeletingAccount(true);
+    setDeleteAccountError('');
+    setSuccessMessage('');
+    setGeneralError('');
+
+    try {
+      await deleteCurrentUserAccount();
+      await cleanupDeletedAccountSession();
+      router.replace('/(auth)/login');
+    } catch (error) {
+      setDeleteAccountError(
+        error instanceof Error
+          ? error.message
+          : 'No pudimos eliminar tu cuenta.'
+      );
+    } finally {
+      setIsDeletingAccount(false);
+    }
+  };
+
   return {
     email: user?.email ?? 'Correo no disponible',
     fullName,
@@ -115,13 +209,19 @@ export const useUserProfileScreen = () => {
     onboardingCompleted,
     isHydrating,
     isSaving,
+    isDeleteConfirmationVisible,
+    isDeletingAccount,
     generalError,
     successMessage,
+    deleteAccountError,
     setFullName,
     setCountry,
     setLanguage,
     retry: hydrate,
     goBack: () => router.back(),
     handleSave,
+    openDeleteAccountConfirmation,
+    closeDeleteAccountConfirmation,
+    handleDeleteAccount,
   };
 };
