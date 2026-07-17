@@ -13,6 +13,16 @@ const excludedPaths = [
   path.join(__dirname, 'dist'),
 ];
 
+const excludedRootFiles = [
+  '.env',
+  '.env.local',
+  '.env.appstore.local',
+  '.env.teststore.local',
+  '.env.example',
+  '.env.appstore.example',
+  '.env.teststore.example',
+];
+
 const existingBlockList = config.resolver?.blockList
   ? Array.isArray(config.resolver.blockList)
     ? config.resolver.blockList
@@ -25,6 +35,12 @@ config.resolver = {
     ...existingBlockList,
     ...excludedPaths.map(
       (excludedPath) => new RegExp(`^${escapePathForRegex(excludedPath)}\\/.*$`)
+    ),
+    ...excludedRootFiles.map(
+      (fileName) =>
+        new RegExp(
+          `^${escapePathForRegex(path.join(__dirname, fileName))}$`
+        )
     ),
   ],
 };
