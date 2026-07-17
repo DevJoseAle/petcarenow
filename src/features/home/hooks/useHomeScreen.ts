@@ -257,6 +257,10 @@ export const useHomeScreen = () => {
     router.push('/veterinaries?mode=map');
   };
 
+  const navigateToSymptomChecker = () => {
+    router.push('/symptom-checker');
+  };
+
   const navigateToRecordEntry = (
     type?: string
   ) => {
@@ -362,6 +366,7 @@ export const useHomeScreen = () => {
     navigateToPets,
     navigateToCareProfile,
     navigateToCalendar,
+    navigateToSymptomChecker,
     navigateToVeterinariesList,
     navigateToRecordEntry,
     navigateToEventEntry,

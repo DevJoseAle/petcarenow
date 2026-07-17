@@ -32,3 +32,29 @@ jest.mock('expo-notifications', () => ({
     TIME_INTERVAL: 'timeInterval',
   },
 }));
+
+jest.mock(
+  '@react-native-async-storage/async-storage',
+  () => {
+    const storage = new Map<string, string>();
+
+    return {
+      getItem: jest.fn(async (key: string) =>
+        storage.has(key)
+          ? storage.get(key) ?? null
+          : null
+      ),
+      setItem: jest.fn(
+        async (key: string, value: string) => {
+          storage.set(key, value);
+        }
+      ),
+      removeItem: jest.fn(async (key: string) => {
+        storage.delete(key);
+      }),
+      clear: jest.fn(async () => {
+        storage.clear();
+      }),
+    };
+  }
+);

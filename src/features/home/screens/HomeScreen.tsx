@@ -46,6 +46,7 @@ export default function HomeScreen() {
     navigateToPets,
     navigateToCareProfile,
     navigateToCalendar,
+    navigateToSymptomChecker,
     openEmergencyMenu,
     retryPets,
     retryCareEvents,
@@ -197,6 +198,35 @@ export default function HomeScreen() {
             onPress={openEmergencyMenu}
           />
         )}
+
+        <HomeSectionCard title="Revisión rápida">
+          <View style={styles.symptomCheckerCard}>
+            <View style={styles.symptomCheckerCopy}>
+              <Text
+                style={[
+                  styles.symptomCheckerTitle,
+                  { color: theme.textPrimary },
+                ]}
+              >
+                Symptom Checker
+              </Text>
+              <Text
+                style={[
+                  styles.symptomCheckerDescription,
+                  { color: theme.textSecondary },
+                ]}
+              >
+                Responde unas preguntas guiadas para
+                orientarte sobre la prioridad de
+                atención de tu mascota.
+              </Text>
+            </View>
+            <PrimaryButton
+              title="Abrir revisión"
+              action={navigateToSymptomChecker}
+            />
+          </View>
+        </HomeSectionCard>
 
         {SHOW_VACCINES_CARD ? (
           <HomeSectionCard title="Hoy para tu mascota">
@@ -374,6 +404,20 @@ const styles = StyleSheet.create({
   },
   careList: {
     gap: 14,
+  },
+  symptomCheckerCard: {
+    gap: 4,
+  },
+  symptomCheckerCopy: {
+    gap: 8,
+  },
+  symptomCheckerTitle: {
+    fontSize: 20,
+    fontWeight: '800',
+  },
+  symptomCheckerDescription: {
+    fontSize: 15,
+    lineHeight: 22,
   },
   emptyState: {
     flex: 1,
