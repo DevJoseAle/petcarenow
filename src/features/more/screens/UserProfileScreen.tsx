@@ -23,14 +23,20 @@ export default function UserProfileScreen() {
     onboardingCompleted,
     isHydrating,
     isSaving,
+    isDeleteConfirmationVisible,
+    isDeletingAccount,
     generalError,
     successMessage,
+    deleteAccountError,
     setFullName,
     setCountry,
     setLanguage,
     retry,
     goBack,
     handleSave,
+    openDeleteAccountConfirmation,
+    closeDeleteAccountConfirmation,
+    handleDeleteAccount,
   } = useUserProfileScreen();
 
   return (
@@ -188,8 +194,174 @@ export default function UserProfileScreen() {
                   : 'Guardar cambios'
               }
               action={handleSave}
-              disabled={isSaving}
+              disabled={isSaving || isDeletingAccount}
             />
+
+            <View
+              style={[
+                styles.deleteCard,
+                {
+                  backgroundColor:
+                    theme.emergencyBackground,
+                  borderColor: theme.emergency,
+                },
+              ]}
+            >
+              <Text
+                style={[
+                  styles.deleteTitle,
+                  { color: theme.emergency },
+                ]}
+              >
+                Zona de peligro
+              </Text>
+              <Text
+                style={[
+                  styles.deleteDescription,
+                  {
+                    color: theme.textPrimary,
+                  },
+                ]}
+              >
+                Eliminar tu cuenta borra tu acceso y
+                deja esta acción como irreversible.
+              </Text>
+
+              {!isDeleteConfirmationVisible ? (
+                <Pressable
+                  onPress={
+                    openDeleteAccountConfirmation
+                  }
+                  disabled={isDeletingAccount}
+                  style={[
+                    styles.deletePrimaryButton,
+                    {
+                      borderColor:
+                        theme.emergency,
+                      backgroundColor:
+                        theme.background,
+                    },
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.deletePrimaryLabel,
+                      {
+                        color: theme.emergency,
+                      },
+                    ]}
+                  >
+                    Eliminar cuenta
+                  </Text>
+                </Pressable>
+              ) : (
+                <View
+                  style={[
+                    styles.confirmationCard,
+                    {
+                      borderColor: theme.emergency,
+                      backgroundColor:
+                        theme.background,
+                    },
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.confirmationTitle,
+                      {
+                        color:
+                          theme.textPrimary,
+                      },
+                    ]}
+                  >
+                    Confirma la eliminación
+                  </Text>
+                  <Text
+                    style={[
+                      styles.confirmationText,
+                      {
+                        color:
+                          theme.textSecondary,
+                      },
+                    ]}
+                  >
+                    Esta acción eliminará tu cuenta
+                    completa y cerrará tu sesión en
+                    este dispositivo.
+                  </Text>
+
+                  <View
+                    style={
+                      styles.confirmationActions
+                    }
+                  >
+                    <Pressable
+                      onPress={
+                        closeDeleteAccountConfirmation
+                      }
+                      disabled={isDeletingAccount}
+                      style={[
+                        styles.cancelButton,
+                        {
+                          borderColor:
+                            theme.border,
+                        },
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.cancelLabel,
+                          {
+                            color:
+                              theme.textPrimary,
+                          },
+                        ]}
+                      >
+                        Cancelar
+                      </Text>
+                    </Pressable>
+
+                    <Pressable
+                      onPress={
+                        handleDeleteAccount
+                      }
+                      disabled={isDeletingAccount}
+                      style={[
+                        styles.confirmDeleteButton,
+                        {
+                          backgroundColor:
+                            theme.emergency,
+                        },
+                      ]}
+                    >
+                      <Text
+                        style={
+                          styles.confirmDeleteLabel
+                        }
+                      >
+                        {isDeletingAccount
+                          ? 'Eliminando...'
+                          : 'Confirmar eliminación'}
+                      </Text>
+                    </Pressable>
+                  </View>
+
+                  {deleteAccountError ? (
+                    <Text
+                      style={[
+                        styles.deleteErrorText,
+                        {
+                          color:
+                            theme.emergency,
+                        },
+                      ]}
+                    >
+                      {deleteAccountError}
+                    </Text>
+                  ) : null}
+                </View>
+              )}
+            </View>
           </>
         )}
       </View>
@@ -335,5 +507,73 @@ const styles = StyleSheet.create({
   successText: {
     fontSize: 14,
     lineHeight: 20,
+  },
+  deleteCard: {
+    borderWidth: 1,
+    borderRadius: 22,
+    padding: 16,
+    gap: 12,
+  },
+  deleteTitle: {
+    fontSize: 15,
+    fontWeight: '800',
+  },
+  deleteDescription: {
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  deletePrimaryButton: {
+    borderWidth: 1,
+    borderRadius: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+    alignItems: 'center',
+  },
+  deletePrimaryLabel: {
+    fontSize: 15,
+    fontWeight: '800',
+  },
+  confirmationCard: {
+    borderWidth: 1,
+    borderRadius: 18,
+    padding: 14,
+    gap: 12,
+  },
+  confirmationTitle: {
+    fontSize: 15,
+    fontWeight: '800',
+  },
+  confirmationText: {
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  confirmationActions: {
+    gap: 10,
+  },
+  cancelButton: {
+    borderWidth: 1,
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  cancelLabel: {
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  confirmDeleteButton: {
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  confirmDeleteLabel: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  deleteErrorText: {
+    fontSize: 13,
+    lineHeight: 18,
   },
 });
